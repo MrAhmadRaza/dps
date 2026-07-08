@@ -1,0 +1,213 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 9.8pt;
+    font-weight: 700;
+    line-height: 1.18;
+    background: #f4f4f4;
+}
+
+/* ===================== SCREEN VIEW ===================== */
+.wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 25px 15px;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.voucher {
+    width: 390px;
+    background: white;
+    border: 2px solid #000;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    min-height: 555px;           /* Balanced height */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* ===================== PRINT VIEW ===================== */
+@media print {
+    @page { size: A4; margin: 8mm; }
+
+    body { background: white; margin: 0; padding: 0; }
+
+    .wrapper { display: block !important; width: 100%; }
+
+    .voucher {
+        width: 47.5% !important;
+        margin: 1% !important;
+        padding: 12px 14px;
+        min-height: 148mm !important;
+        display: flex;
+        flex-direction: column;
+        border: 2px solid #000;
+        page-break-inside: avoid;
+        float: left;
+    }
+
+    .print-left, .print-right { page-break-after: avoid !important; }
+
+    .print-new-page {
+        clear: both !important;
+        page-break-before: always !important;
+        margin-top: 25mm !important;
+        float: none !important;
+    }
+}
+
+/* ===================== HEADER ===================== */
+.header-section {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.bank { 
+    font-weight: 900; 
+    font-size: 13pt; 
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+.branch { 
+    font-size: 9.6pt; 
+    margin: 2px 0;
+    text-align: center;
+}
+
+.school { 
+    font-size: 14.5pt; 
+    font-weight: 900; 
+    /* margin: 5px 0 10px 0;  */
+    text-transform: uppercase; 
+    text-align: center;
+}
+
+.thick-line { 
+    border-top: 2px solid #000; 
+    margin: 5px 0 12px 0; 
+}
+
+/* ===================== INFO ROWS (Name, Father, Class etc.) ===================== */
+.box-row {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.box-label {
+    width: 110px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.box-label::after {
+    content: " :";
+    margin-left: 4px;
+}
+
+.box-value {
+    flex: 1;
+    border: 1.3px solid #000;
+    padding: 3px 8px;
+    min-height: 20px;
+    font-size: 9.8pt;
+    margin-left: 6px;
+}
+
+/* ===================== FEE ROWS ===================== */
+.row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 4px 0;
+}
+
+.label { 
+    width: 150px; 
+    font-weight: 800; 
+}
+
+.amount-box { 
+    width: 75px; 
+    height: 19px; 
+    border: 1.3px solid #000; 
+    text-align: right; 
+    padding-right: 6px; 
+    font-weight: 900;
+}
+
+.total-row {
+    margin-top: 8px;
+    font-size: 10.5pt;
+    font-weight: 900;
+}
+
+/* ===================== IN WORDS ===================== */
+.full-box-row {
+    display: flex;
+    margin-top: 10px;
+    align-items: flex-start;
+}
+
+.full-box-label {
+    width: 100px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.full-box-label::after {
+    content: " :";
+}
+
+.full-box {
+    flex: 1;
+    border: 1.3px solid #000;
+    min-height: 26px;
+    padding: 4px 8px;
+    font-size: 8.9pt;
+    margin-left: 6px;
+}
+
+.note {
+    font-size: 8.9pt;
+    margin-top: 14px;
+    padding-top: 8px;
+    border-top: 1px solid #000;
+    line-height: 1.35;
+}
+
+/* ===================== SIGN SECTION (Bottom Fixed) ===================== */
+.sign {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: auto !important;
+    padding-top: 20px;
+    font-size: 8.4pt;
+    border-top: 1px dashed #444;
+    gap: 10px;
+}
+
+.sign > div {
+    flex: 1;
+    text-align: center;
+}
+
+.copy-name {
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    /* border: 2px solid #000; */
+    font-size: 9.5pt;
+    white-space: nowrap;
+    margin-top: 6px;
+}
