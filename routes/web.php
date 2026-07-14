@@ -22,7 +22,13 @@ use App\Http\Controllers\Backend\Admin\Parant\ChallanPaymentController;
 
 
 // Public Route Acccess
-Route::get('/',fn() => view('frontend.home.index'))->name('/');
+Route::get('/', function () {
+   $academicSession = App\Models\AcademicSession::where('status', '=' , 'active')->latest()->count();
+   $admissions      = App\Models\Student::latest()->count();
+   $parents         = App\Models\Parant::latest()->count();
+   $challans        = App\Models\FeeChallan::latest()->count();
+    return view('frontend.home.index',compact('academicSession','admissions','parents','challans'));
+})->name('/');  
 
 // Admin Routes
 Route::prefix('admin')->as('admin.')->group(function(){
