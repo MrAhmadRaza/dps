@@ -10,6 +10,29 @@
         --light: #f8f9fa;
         --gray: #6c757d;
     }
+  
+
+     .table thead th {
+        font-size: 0.95rem !important;
+        text-transform: capitalize !important;
+        letter-spacing: 0px !important;
+        padding: 10px 12px !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+        vertical-align: middle !important;
+    }
+
+    .table td {
+        vertical-align: middle !important;
+        white-space: nowrap !important;
+        text-align: center !important;
+    }
+
+    .table td:nth-child(7),
+    .table th:nth-child(7) {
+        white-space: normal !important;
+        min-width: 130px;
+    }
     .profile-header {
         background: linear-gradient(135deg, var(--primary), #0b5ed7);
         color: white;
@@ -275,95 +298,136 @@
                     </div>
                 </div>
 
-                <!-- New Fee Details Tab -->
+                <!-- Fee Details Tab -->
                 <div class="tab-pane fade" id="fee" role="tabpanel">
-                    <h5 class="text-success mb-4"><i class="fa fa-money-bill-wave me-2"></i>Admission Fee Details</h5>
+                    <h5 class="text-success mb-4">
+                        <i class="fa fa-money-bill-wave me-2"></i>Admission Fee Details
+                    </h5>
 
-                    @if($student->total_fee_paid > 0)
+                    @if($student->discount == 1)
+
                         <div class="row g-4">
                             <div class="col-md-3">
                                 <div class="fee-item">
-                                    <div class="info-label">Admission Fee</div>
-                                    <div class="info-value">Rs. {{ number_format($student->admission_fee ?? 0, 2) }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="fee-item">
-                                    <div class="info-label">Tuition Fee</div>
-                                    <div class="info-value">Rs. {{ number_format($student->tuition_fee ?? 0, 2) }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="fee-item">
-                                    <div class="info-label">Stationary Fee</div>
-                                    <div class="info-value">Rs. {{ number_format($student->stationary_fee ?? 0, 2) }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="fee-item">
-                                    <div class="info-label">Library Fee</div>
-                                    <div class="info-value">Rs. {{ number_format($student->library_fee ?? 0, 2) }}</div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-3">
-                                <div class="fee-item">
-                                    <div class="info-label">Sports Fund</div>
-                                    <div class="info-value">Rs. {{ number_format($student->sports_fund ?? 0, 2) }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="fee-item">
-                                    <div class="info-label">Security Deposit</div>
-                                    <div class="info-value">Rs. {{ number_format($student->security_deposit ?? 0, 2) }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="fee-item">
-                                    <div class="info-label">Dev Fund</div>
-                                    <div class="info-value">Rs. {{ number_format($student->development_fund ?? 0, 2) }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="fee-item">
-                                    <div class="info-label">Misc. Charges</div>
-                                    <div class="info-value">Rs. {{ number_format($student->misc_charges ?? 0, 2) }}</div>
+                                    <div class="info-label">Discount</div>
+                                    <div class="info-value">
+                                        Rs. {{ number_format($student->discount_amount ?? 0, 2) }}
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="col-12 mt-3">
                                 <div class="fee-total">
-                                    <strong>TOTAL AMOUNT PAID</strong> 
+                                    <strong>DISCOUNT AMOUNT</strong>
                                     <span class="underline-long">
-                                        Rs. {{ number_format(
-                                            ($student->admission_fee ?? 0) +
-                                            ($student->tuition_fee ?? 0) +
-                                            ($student->stationary_fee ?? 0) +
-                                            ($student->library_fee ?? 0) +
-                                            ($student->sports_fund ?? 0) +
-                                            ($student->security_deposit ?? 0) +
-                                            ($student->development_fund ?? 0) +
-                                            ($student->misc_charges ?? 0),
-                                            2
-                                        ) }}
-                                    </span><br>
-                                    @if($student->receipt_no)
-                                        <br><small>Receipt No: {{ $student->receipt_no }}</small>
+                                        Rs. {{ number_format($student->discount_amount ?? 0, 2) }}
+                                    </span>
+                                    <br>
+                                    <small>Discount is enabled for this student.</small>
+                                         @if($student->discount_due_date)
+                                        <br>
+                                        <small>
+                                            Due Date:
+                                            {{ \Carbon\Carbon::parse($student->discount_due_date)->format('d M Y') }}
+                                        </small>
                                     @endif
-                                    @if($student->fee_paid_date)
-                                        <br><small>Paid on: {{ \Carbon\Carbon::parse($student->fee_paid_date)->format('d M Y') }}</small>
+
+                                    @if($student->discount_notes)
+                                        <br>
+                                        <small>
+                                            Note: {{$student->discount_notes }}
+                                        </small>
+                                    @endif
+                                </div>
+                                
+                            </div>
+                        </div>
+
+                    @elseif($voucher && $voucher->items->count())
+
+                        <div class="row g-4">
+
+                            @foreach($voucher->items as $item)
+                                <div class="col-md-3">
+                                    <div class="fee-item">
+                                        <div class="info-label">
+                                            {{ $item->fee_name ?? 'Fee' }}
+                                        </div>
+                                        <div class="info-value">
+                                            Rs. {{ number_format($item->amount ?? 0, 2) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+
+                            <div class="col-12 mt-3">
+                                <div class="fee-total">
+                                    <strong>TOTAL AMOUNT</strong>
+                                    <span class="underline-long">
+                                        Rs. {{ number_format($voucher->items->sum('amount'), 2) }}
+                                    </span>
+
+                                    @if($voucher->due_date)
+                                        <br>
+                                        <small>
+                                            Due Date:
+                                            {{ \Carbon\Carbon::parse($voucher->due_date)->format('d M Y') }}
+                                        </small>
+                                    @endif
+
+                                    @if($voucher->notes)
+                                        <br>
+                                        <small>
+                                            Note: {{ $voucher->notes }}
+                                        </small>
                                     @endif
                                 </div>
                             </div>
+
                         </div>
+
                     @else
+
                         <div class="empty-state">
                             <i class="fa fa-money-bill-wave fa-3x mb-3 text-muted"></i>
                             <h5 class="text-muted">No fee details recorded</h5>
-                            <p>Fee information was not entered during admission.</p>
-                            <small>Click "Edit Details" to add fee records.</small>
+                            <p>Fee voucher has not been generated for this student.</p>
                         </div>
+
                     @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Fee Challans -->
+        <div class="card mt-5">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fa fa-file-invoice me-2"></i>
+                    Fee Challans
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                     <table class="table table-hover text-center data-table align-middle table-striped" style="width:100%">
+                        <thead class="table-light text-center">
+                            <tr>
+                                <th>No</th>
+                                <th>Voucher</th>
+                                <th>Name</th>
+                                <th>Session</th>
+                                <th>Class</th>
+                                <th>Section</th>
+                                <th>Month</th>
+                                <th>Amount</th>
+                                <th>Type</th>
+                                <th>Paid Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -381,4 +445,76 @@
 
 </div>
 
+@endsection
+
+@section('scripts')
+<script type="text/javascript">
+    let table;
+    $(function () {
+        table = $('.data-table').DataTable({
+            processing: false,
+            serverSide: true,
+            ajax: "{{ route('admin.admission.challans', $student->id) }}",
+            scrollX: true,
+            scrollCollapse: false,
+            autoWidth: false,
+            columns: [
+                { data: 'DT_RowIndex', width: "50px", orderable: false, searchable: false },
+                { data: 'voucher_image', name: 'voucher_image' },
+                { data: 'student_name', name: 'student_name' },
+                { data: 'session_name', name: 'session_name' },
+                { data: 'class', name: 'class' },
+                { data: 'section', name: 'section' },
+                { data: 'month', name: 'month' },
+                { data: 'amount', name: 'amount' },
+                { data: 'challan_type', name: 'challan_type' },
+                { data: 'paid_date', name: 'paid_date',},
+                { data: 'status', name: 'status',},
+                { data: 'action', name: 'action', width: "140px", className: "text-center", orderable: false, searchable: false }
+            ],
+            language: {
+                processing: '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>',
+                emptyTable: 'No challans found'
+            },
+
+            initComplete: function () {
+                this.api().columns.adjust();
+                  $('.dataTables_scrollBody').css('overflow', 'visible !important');
+            },
+            drawCallback: function (settings) {
+                this.api().columns.adjust();
+                $('.dataTables_scrollBody').css('overflow', 'visible !important');
+
+                var api = this.api();
+                var pageInfo = api.page.info();
+
+                // Agar records empty hain to pagination + info hide
+                if (pageInfo.recordsTotal === 0) {
+                    $(api.table().container()).find('.dataTables_paginate').hide();
+                    $(api.table().container()).find('.dataTables_info').hide();
+                    $(api.table().container()).find('.dataTables_length').hide();
+                } else {
+                    $(api.table().container()).find('.dataTables_paginate').show();
+                    $(api.table().container()).find('.dataTables_info').show();
+                    $(api.table().container()).find('.dataTables_length').show();
+                }
+            }
+        });
+
+        $('body').on('expanded.pushMenu collapsed.pushMenu', function() {
+            setTimeout(function() {
+                table.columns.adjust().draw(false);  
+            }, 350);
+        });
+
+        $(document).on('click', '[data-widget="pushmenu"], .sidebar-toggle, .sidebar-toggler, .nav-link[data-toggle="sidebar"]', function() {
+            setTimeout(function() {
+                table.columns.adjust().draw(false);
+            }, 300);
+        });
+        $(window).on('resize', function() {
+            table.columns.adjust().draw(false);
+        });
+    });
+</script>
 @endsection

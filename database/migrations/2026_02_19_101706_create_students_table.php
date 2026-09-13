@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id();
             $table->foreignId('parent_id')->nullable()->constrained('parents')->onDelete('cascade');
+            $table->string('register_no', 70)->unique()->nullable();
             $table->string('name');
             $table->date('date_of_birth');
             $table->enum('gender', ['Male', 'Female']);
@@ -23,6 +24,10 @@ return new class extends Migration
             $table->string('domicile')->nullable();
             $table->foreignId('academic_session_id')->nullable()->constrained('academic_sessions')->onDelete('set null');
             $table->foreignId('session_item_id')->nullable()->constrained('session_items')->onDelete('set null');
+            $table->boolean('discount')->default(false);
+            $table->decimal('discount_amount', 12, 2)->default(0);
+            $table->date('discount_due_date')->nullable();
+            $table->text('discount_notes')->nullable();
             $table->string('previous_school')->nullable();
             $table->date('last_fee_paid_upto')->nullable();
             $table->boolean('fees_paid_last_institution')->default(false);
@@ -31,17 +36,9 @@ return new class extends Migration
             $table->date('admission_date')->nullable();
             $table->boolean('declaration_accepted')->default(false);
             $table->string('photo_path')->nullable();
-            $table->decimal('admission_fee', 10, 2)->nullable()->default(0);
-            $table->decimal('tuition_fee', 10, 2)->nullable()->default(0);
-            $table->decimal('stationary_fee', 10, 2)->nullable()->default(0);
-            $table->decimal('library_fee', 10, 2)->nullable()->default(0);
-            $table->decimal('sports_fund', 10, 2)->nullable()->default(0);
-            $table->decimal('security_deposit', 10, 2)->nullable()->default(0);
-            $table->decimal('development_fund', 10, 2)->nullable()->default(0);
-            $table->decimal('misc_charges', 10, 2)->nullable()->default(0);
-            $table->decimal('total_fee_paid', 10, 2)->nullable()->default(0);
-            $table->string('receipt_no')->nullable();
+            $table->string('receipt_no')->nullable()->unique();
             $table->date('fee_paid_date')->nullable();
+            $table->enum('status', ['active','inactive'])->default('inactive');
             $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });

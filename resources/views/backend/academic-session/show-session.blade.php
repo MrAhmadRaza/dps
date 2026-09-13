@@ -9,45 +9,50 @@
     padding: 10px 15px 6px 10px !important;
     text-align: center !important;                      
 }
+.font-arial {
+    font-family: Arial, sans-serif;
+}
 </style>
 
     <div class="container">
         <div class="page-inner">
             <div class="page-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-                <h3 class="mb-2 mb-md-0">Academic Sessions</h3>
+                <h3 class="mb-2 mb-md-0 font-arial">Academic Sessions</h3>
+                <a href="{{route('admin.academic-session.add')}}" class="btn btn-primary">
+                    <i class="fa-solid fa-plus me-1 font-arial  "></i> Add Session
+                </a>
             </div>
 
-        {{-- Success Message --}}
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
+            {{-- Success Message --}}
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
 
-      
-        <div class="card border-0 shadow-sm rounded-3">
-            <div class="card-body p-4">
-                <div class="table-responsive">
-                    <table class="table table-hover text-center data-table align-middle table-striped">
-                        <thead class="table-light text-center">
-                            <tr>
-                                <th>No</th>
-                                <th>Session</th>
-                                <th>Start Date</th>  
-                                <th>End Date</th>
-                                <th>Status</th>
-                                <th>Created</th>
-                                <th class="text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+        
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-body p-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover text-center data-table align-middle table-striped">
+                            <thead class="table-light text-center font-arial">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Session</th>
+                                    <th>Start Date</th>  
+                                    <th>End Date</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection
 
 @section('scripts')
@@ -68,7 +73,6 @@
                 { data: 'start_date', name: 'start_date' },
                 { data: 'end_date', name: 'end_date'},
                 { data: 'status', name: 'status'},
-                { data: 'created_at', name: 'created_at', width: "110px" },
                 { data: 'action', name: 'action', width: "140px", className: "text-center", orderable: false, searchable: false }
             ],
             language: {
@@ -76,11 +80,27 @@
                 emptyTable: "No sessions found"
             },
 
-            drawCallback: function () {
-                $('.dataTables_scrollBody').css('overflow', 'visible !important');
-            },
             initComplete: function () {
+                this.api().columns.adjust();
+                  $('.dataTables_scrollBody').css('overflow', 'visible !important');
+            },
+            drawCallback: function (settings) {
+                this.api().columns.adjust();
                 $('.dataTables_scrollBody').css('overflow', 'visible !important');
+
+                var api = this.api();
+                var pageInfo = api.page.info();
+
+                // Agar records empty hain to pagination + info hide
+                if (pageInfo.recordsTotal === 0) {
+                    $(api.table().container()).find('.dataTables_paginate').hide();
+                    $(api.table().container()).find('.dataTables_info').hide();
+                    $(api.table().container()).find('.dataTables_length').hide();
+                } else {
+                    $(api.table().container()).find('.dataTables_paginate').show();
+                    $(api.table().container()).find('.dataTables_info').show();
+                    $(api.table().container()).find('.dataTables_length').show();
+                }
             }
         });
 

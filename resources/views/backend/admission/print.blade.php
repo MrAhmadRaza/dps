@@ -7,7 +7,7 @@
 
 <style>
     body {
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, sans-serif;
         font-size: 18px;
         line-height: 1.35;
         margin: 0;
@@ -338,11 +338,12 @@
         <div style="position: relative; height: 100px; margin-bottom: 30px;">
             <div
                 style="width: 85px; height: 100px; float: left; text-align: center; line-height: 100px; font-size: 9px; margin-right: 10px;">
-                @if ($student->photo_path)
+                @if ($student->photo_path && file_exists(public_path($student->photo_path)))
                     <img src="{{ asset($student->photo_path) }}" alt="Student Photo" width="85" height="100"
                         style="display:block; object-fit:cover;">
                 @else
-                    PHOTO<br>GRAPH
+                    <img src="{{ asset('default/dummy.png') }}" alt="Student Photo" width="85" height="100"
+                        style="display:block; object-fit:cover;">
                 @endif
             </div>
 
@@ -360,7 +361,7 @@
 
                 <p style="margin:7px 0; font-size:bold; display:flex; justify-content:space-between;">
                     <span>Regd.No:</span>
-                    <span class="underline-med">______________</span>
+                    <span class="underline-med">{{$student->register_no ?? '______________'}}</span>
                 </p>
 
                 <p style="margin:7px 0; font-size:bold; display:flex; justify-content:space-between;">
@@ -377,33 +378,62 @@
         </div>
 
         <table>
+            {{-- Name --}}
             <tr>
-                <td class="label">1. Name</td>
-                <td>{{ strtoupper($student->name ?? '_____________')}}</td>
-                <td class="label">Date of Birth</td>
-                <td>{{ $student->date_of_birth ? \Carbon\Carbon::parse($student->date_of_birth)->format('d/m/Y') : '______________' }}
+                <td class="label" style="width: 15%;"> Name</td>
+                <td colspan="7">
+                    {{ strtoupper($student->name ?? '____________________________________________') }}
                 </td>
-                <td class="label">B-Form No</td>
-                <td>{{ $student->b_form_no ?? '______________' }}</td>
-                <td class="label">Religion</td>
-                <td>{{ $student->religion ?? '________' }}</td>
-                {{-- <td class="label">Siblings Name</td>
-                <td>{{ $student->sibling->sibling_name ?? '________' }}</td> --}}
             </tr>
+
+            {{-- Date of Birth + B-Form --}}
+            <tr>
+                <td class="label">Date of Birth</td>
+                <td colspan="2">
+                    {{ $student->date_of_birth
+                        ? \Carbon\Carbon::parse($student->date_of_birth)->format('d/m/Y')
+                        : '______________' }}
+                </td>
+
+                <td class="label">B-Form No</td>
+                <td colspan="3">
+                    {{ $student->b_form_no ?? '____________________________' }}
+                </td>
+
+                <td class="label">Religion</td>
+            </tr>
+
             <tr>
                 <td class="label">Gender</td>
-                <td>{{ $student->gender ?? 'M/F' }}</td>
-                <td class="label">Caste</td>
-                <td>{{ $student->caste ?? '________' }}</td>
-                <td class="label">Domicile</td>
-                <td>{{ $student->domicile ?? '________' }}</td>
-                <td class="label">Siblings_In_Dps</td>
-                <td>{{ $student->sibling->sibling_in_dps ?? '________' }}</td>
+                <td>
+                    {{ $student->gender ?? 'M/F' }}
+                </td>
 
+                <td class="label">Caste</td>
+                <td>
+                    {{ $student->caste ?? '________________' }}
+                </td>
+
+                <td class="label">Domicile</td>
+                <td colspan="2">
+                    {{ $student->domicile ?? '____________________________' }}
+                </td>
+
+                <td>
+                    {{ $student->religion ?? '________' }}
+                </td>
+            </tr>
+
+            {{-- Siblings --}}
+            <tr>
+                <td class="label">Siblings In DPS</td>
+                <td colspan="7">
+                    {{ $student->sibling->sibling_in_dps ?? '____________________________' }}
+                </td>
             </tr>
         </table>
 
-        <div class="section-header">2. FATHER / MOTHER / GUARDIAN PARTICULARS</div>
+        <div class="section-header">FATHER / MOTHER / GUARDIAN PARTICULARS</div>
 
         <table>
             <tr>
@@ -445,7 +475,7 @@
             </tr>
         </table>
 
-        <div class="section-header">3. Class Applied For</div>
+        <div class="section-header">Class Applied For</div>
         <table>
             <tr>
 
@@ -472,7 +502,7 @@
                 </tr>
             </table>
         @endif
-        <div class="section-header">5. Previous School</div>
+        <div class="section-header">Previous School</div>
         <table>
             <tr>
                 <td class="label">School Name</td>
@@ -485,7 +515,7 @@
             </tr>
         </table>
 
-        <div class="section-header">6. Games/Sports & Extra Activities</div>
+        <div class="section-header">Games/Sports & Extra Activities</div>
         <table>
             <tr>
                 <td class="label">Games/Sports</td>
@@ -566,7 +596,7 @@
 
             <table class="test-table" style="width:100%; margin:12px 0 24px 0;">
                 <tr>
-                    <th>Admission Test</th>
+                    <td>Admission Test</td>
                     <th>Eng.</th>
                     <th>Urdu</th>
                     <th>Maths</th>
@@ -595,6 +625,21 @@
                     <td></td>
                     <td></td>
                 </tr>
+                <tr>
+                    <td>Admission Test Marks</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
             </table>
 
             <div class="official-grid">
@@ -602,127 +647,68 @@
                 <div class="left-column">
 
                     <strong style="font-size:12px;">Fee Details (RS)</strong>
-
+                    @php $feeTotal = 0; @endphp
                     <div style="font-size:11px; line-height:1.7; margin-top:6px;">
+                        {{-- Voucher Items --}}
+                        @php
+                            $isDiscount = (int) ($student->discount ?? 0) === 1;
+                            $feeTotal = 0;
+                        @endphp
 
-                        <div style="display:flex;">
-                            <span style="width:110px;">Admission Fee</span>
-                            <span>
-                                @if (($student->admission_fee ?? 0) > 0)
-                                    {{ number_format($student->admission_fee, 2) }}
-                                @else
-                                    ________________________
-                                @endif
-                            </span>
-                        </div>
-
-                        <div style="display:flex;">
-                            <span style="width:110px;">Tuition Fee</span>
-                            <span>
-                                @if (($student->tuition_fee ?? 0) > 0)
-                                    {{ number_format($student->tuition_fee, 2) }}
-                                @else
-                                    ________________________
-                                @endif
-                            </span>
-                        </div>
-
-                        <div style="display:flex;">
-                            <span style="width:110px;">Stationary Fee</span>
-                            <span>
-                                @if (($student->stationary_fee ?? 0) > 0)
-                                    {{ number_format($student->stationary_fee, 2) }}
-                                @else
-                                    ________________________
-                                @endif
-                            </span>
-                        </div>
-
-                        <div style="display:flex;">
-                            <span style="width:110px;">Library Fee</span>
-                            <span>
-                                @if (($student->library_fee ?? 0) > 0)
-                                    {{ number_format($student->library_fee, 2) }}
-                                @else
-                                    ________________________
-                                @endif
-                            </span>
-                        </div>
-
-                        <div style="display:flex;">
-                            <span style="width:110px;">Sports Fund</span>
-                            <span>
-                                @if (($student->sports_fund ?? 0) > 0)
-                                    {{ number_format($student->sports_fund, 2) }}
-                                @else
-                                    ________________________
-                                @endif
-                            </span>
-                        </div>
-
-                        <div style="display:flex;">
-                            <span style="width:110px;">Security Deposit</span>
-                            <span>
-                                @if (($student->security_deposit ?? 0) > 0)
-                                    {{ number_format($student->security_deposit, 2) }}
-                                @else
-                                    ________________________
-                                @endif
-                            </span>
-                        </div>
-
-                        <div style="display:flex;">
-                            <span style="width:110px;">Dev Fund</span>
-                            <span>
-                                @if (($student->development_fund ?? 0) > 0)
-                                    {{ number_format($student->development_fund, 2) }}
-                                @else
-                                    ________________________
-                                @endif
-                            </span>
-                        </div>
-
-                        <div style="display:flex;">
-                            <span style="width:110px;">Misc. Charges</span>
-                            <span>
-                                @if (($student->misc_charges ?? 0) > 0)
-                                    {{ number_format($student->misc_charges, 2) }}
-                                @else
-                                    ________________________
-                                @endif
-                            </span>
-                        </div>
-
-                        <br>
-
-                        <strong>TOTAL AMOUNT PAID RS:</strong>
-                        <span class="underline-long">
+                        @if ($isDiscount)
                             @php
-                                $total =
-                                    ($student->admission_fee ?? 0) +
-                                    ($student->tuition_fee ?? 0) +
-                                    ($student->stationary_fee ?? 0) +
-                                    ($student->library_fee ?? 0) +
-                                    ($student->sports_fund ?? 0) +
-                                    ($student->security_deposit ?? 0) +
-                                    ($student->development_fund ?? 0) +
-                                    ($student->misc_charges ?? 0);
+                                $feeTotal = (float) ($student->discount_amount ?? 0);
                             @endphp
 
-                            @if ($total > 0)
-                                {{ number_format($total, 2) }}
+                            <div style="display:flex;">
+                                <span>
+                                    Discount Amount : 
+                                </span>
+                                <span style="margin-left:10px;">
+                                    {{ number_format($feeTotal, 2) }}
+                                </span>
+                            </div>
+                        @else
+                            @if ($voucher && $voucher->items->count())
+                                @foreach ($voucher->items as $item)
+                                    @php
+                                        $amount = (float) ($item->amount ?? 0);
+                                        $feeTotal += $amount;
+                                    @endphp
+
+                                        <div style="display:flex;">
+                                            <span style="width:180px;" >
+                                                {{ $item->fee_name }}
+                                            </span>
+                                            <span style="margin-left:10px;">
+                                                {{ number_format($amount, 2) }}
+                                            </span>
+                                        </div>
+                                @endforeach
+                            @endif
+                        @endif
+                        <br>
+                        <strong>
+                            TOTAL AMOUNT PAID :
+                        </strong>
+
+                        <span class="underline-long">
+                            @if ($feeTotal > 0)
+                                {{ number_format($feeTotal, 2) }}
                             @else
                                 ____________________
                             @endif
-                        </span><br>
+                        </span>
 
-                        Vide Receipt No: <span class="underline-med">{{ $student->receipt_no ?? '____________' }}</span><br>
-                        Dated: <span class="underline-med">{{ $student->fee_paid_date ? \Carbon\Carbon::parse($student->fee_paid_date)->format('d M Y') : '________' }}</span><br><br>
+                        <br>
+
+                        Receipt No : <span class="underline-med">{{ $student->receipt_no ?? '____________' }}</span><br>
+                        Dated: <span class="underline-med" >{{ $student->fee_paid_date ? \Carbon\Carbon::parse($student->fee_paid_date)->format('d M Y') : '________' }}</span><br><br>
 
                         <div style="font-size:13px; line-height:1.8;">
-                            <div style="display:flex;">
+                            <div style="display:flex; justify-content: center; align-items: end;">
                                 <span style="width:110px; margin-top:5px;">Documents</span>
-                                <span style="flex:1;"><strong>COMPLETE / INCOMPLETE</strong></span>
+                                <span style="flex:1; font-size: 12px;"><strong>COMPLETE / INCOMPLETE</strong></span>
                             </div>
 
                             <div style="display:flex; margin-top:10px; margin-bottom:12px; ">
@@ -731,12 +717,12 @@
                             </div>
 
                             <div style="display:flex;">
-                                <span style="width:110px;">Reg. No</span>
-                                <span style="flex:1;">________________________</span>
+                                <span style="width:110px;">Reg. No :</span>
+                                <span style="flex:1;">{{$student->register_no ?? '________________________'}}</span>
                             </div>
 
                             <div style="display:flex; margin-top:3px;">
-                                <span style="width:110px;">Admission Date</span>
+                                <span style="width:120px;">Admission Date</span>
                                 <span style="flex:1;">
                                     {{ $student->admission_date ? \Carbon\Carbon::parse($student->admission_date)->format('d M Y') : '___________' }}
                                 </span>

@@ -9,7 +9,7 @@ class Parant extends Authenticatable
 {
     protected $table = 'parents';
     protected $fillable = [
-        'portal_id','password','father_name','father_nic','mother_name','occupation','income',
+        'father_name','father_nic', 'password' , 'mother_name','occupation','income',
         'contact_no','address',
     ];
 

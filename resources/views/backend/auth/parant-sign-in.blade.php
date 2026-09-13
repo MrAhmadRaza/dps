@@ -104,12 +104,13 @@
             <form action="{{ route('parent.signIn.submit') }}" method="post">
                 @csrf
                 <div class="mb-3">
-                    <label class="form-label">Portal ID <span class="text-danger">*</span></label>
-                    <input type="text" name="portal_id"
-                        value="{{ old('portal_id') }}"
+                    <label class="form-label">Father NIC <span class="text-danger">*</span></label>
+                    <input type="text" name="father_nic" id="father_nic"
+                        value="{{ old('father_nic') }}"
                         required
+                        inputmode="numeric"
                         class="form-control"
-                        placeholder="Portal ID">
+                       placeholder="12345-1234567-1" maxlength="15">
                 </div>
 
                 <div class="mb-3">
@@ -179,7 +180,93 @@ function togglePassword() {
         icon.classList.add('fa-eye');
     }
 }
-</script>
 
+
+        // ==========================================================
+        // Pattern Configuration
+        // ==========================================================
+
+        const patterns = {
+            father_nic: /^\d{5}-\d{7}-\d$/,
+        };
+
+         function formatNic(input) {
+
+            let value = input.value.replace(/\D/g, '');
+
+            // Maximum 13 digits
+            value = value.substring(0, 13);
+
+            if (value.length > 12) {
+
+                value =
+                    value.substring(0, 5) +
+                    '-' +
+                    value.substring(5, 12) +
+                    '-' +
+                    value.substring(12);
+
+            } else if (value.length > 5) {
+
+                value =
+                    value.substring(0, 5) +
+                    '-' +
+                    value.substring(5);
+            }
+
+            input.value = value;
+        }
+
+         Object.keys(patterns).forEach(name => {
+
+            const input = document.querySelector(`[name="${name}"]`);
+
+            if (!input) {
+                return;
+            }
+
+            input.addEventListener('input', function () {
+
+                if ( name === 'father_nic')
+                {
+                    formatNic(this);
+                }
+
+                // Remove invalid state while typing
+                this.classList.remove('is-invalid');
+            });
+
+
+            input.addEventListener('blur', function () {
+
+                const value = this.value.trim();
+
+                // Optional field
+                if (
+                    !this.hasAttribute('required') &&
+                    value === ''
+                ) {
+
+                    this.classList.remove(
+                        'is-invalid',
+                        'is-valid'
+                    );
+
+                    return;
+                }
+
+                if (patterns[name].test(value)) {
+
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+
+                } else {
+
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                }
+            });
+        });
+</script>
 </body>
 </html>

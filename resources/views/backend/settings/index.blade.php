@@ -62,6 +62,35 @@
                                     @enderror
                                 </div>
 
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">
+                                        One Bill Prefix 
+                                    </label>
+                                    <input type="text"
+                                           name="one_bill_prefix"
+                                           value="{{ old('one_bill_prefix',$settings?->one_bill_prefix) }}"
+                                           class="form-control"
+                                           placeholder="031234"
+                                            required>
+                                    @error('one_bill_prefix')
+                                        <div class="text-danger mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">
+                                         Late Fee Fine 
+                                    </label>
+                                    <input type="text"
+                                           name="late_fee_fine"
+                                           value="{{ old('late_fee_fine',$settings?->late_fee_fine) }}"
+                                           class="form-control"
+                                           placeholder="200">
+                                    @error('late_fee_fine')
+                                        <div class="text-danger mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
                             </div>
 
                             <div class="mt-2">

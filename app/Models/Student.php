@@ -7,12 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Student extends Model
 {
     protected $fillable = [
-        'parent_id','name','date_of_birth','b_form_no','religion','gender','caste','domicile',
-        'academic_session_id','session_item_id','previous_school',
+        'parent_id','register_no','name','date_of_birth','b_form_no','religion','gender','caste','domicile',
+        'academic_session_id','session_item_id','discount','discount_amount','discount_due_date','discount_notes','previous_school',
         'fees_paid_last_institution','last_fee_paid_upto','games_sports','extra_curricular','photo_path','admission_date',
-        'created_by','admission_fee', 'tuition_fee', 'stationary_fee', 'library_fee',
-        'sports_fund', 'security_deposit', 'development_fund', 'misc_charges',
-        'total_fee_paid', 'receipt_no', 'fee_paid_date',
+        'created_by','receipt_no','fee_paid_date','status',
     ];
 
     protected $casts = [

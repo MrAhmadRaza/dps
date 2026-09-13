@@ -10,6 +10,18 @@
         --light: #f8f9fa;
         --gray: #6c757d;
     }
+  
+
+    .table thead th {
+        font-size: 0.95rem !important;
+        text-transform: capitalize !important;
+        letter-spacing: 0px !important;
+        padding: 10px 15px 6px 10px !important;
+        text-align: center !important;                      
+    }
+    .font-arial {
+        font-family: Arial, sans-serif;
+    }
     .profile-header {
         background: linear-gradient(135deg, var(--primary), #0b5ed7);
         color: white;
@@ -72,7 +84,7 @@
 
     <!-- Header with Back & Actions -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold mb-0">Student Details</h3>
+        <h3 class="fw-bold mb-0">Admission Details</h3>
         <div>
             <a href="{{ route('parent.student.index') }}" class="btn btn-outline-secondary me-2">
                 <i class="fa fa-arrow-left me-1"></i> Back to List
@@ -272,94 +284,102 @@
                     </div>
                 </div>
 
-                <!-- New Fee Details Tab -->
+                <!-- Fee Details Tab -->
                 <div class="tab-pane fade" id="fee" role="tabpanel">
-                    <h5 class="text-success mb-4"><i class="fa fa-money-bill-wave me-2"></i>Admission Fee Details</h5>
+                    <h5 class="text-success mb-4">
+                        <i class="fa fa-money-bill-wave me-2"></i>Admission Fee Details
+                    </h5>
 
-                    @if($student->total_fee_paid > 0)
+                    @if($student->discount == 1)
+
                         <div class="row g-4">
                             <div class="col-md-3">
                                 <div class="fee-item">
-                                    <div class="info-label">Admission Fee</div>
-                                    <div class="info-value">Rs. {{ number_format($student->admission_fee ?? 0, 2) }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="fee-item">
-                                    <div class="info-label">Tuition Fee</div>
-                                    <div class="info-value">Rs. {{ number_format($student->tuition_fee ?? 0, 2) }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="fee-item">
-                                    <div class="info-label">Stationary Fee</div>
-                                    <div class="info-value">Rs. {{ number_format($student->stationary_fee ?? 0, 2) }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="fee-item">
-                                    <div class="info-label">Library Fee</div>
-                                    <div class="info-value">Rs. {{ number_format($student->library_fee ?? 0, 2) }}</div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-3">
-                                <div class="fee-item">
-                                    <div class="info-label">Sports Fund</div>
-                                    <div class="info-value">Rs. {{ number_format($student->sports_fund ?? 0, 2) }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="fee-item">
-                                    <div class="info-label">Security Deposit</div>
-                                    <div class="info-value">Rs. {{ number_format($student->security_deposit ?? 0, 2) }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="fee-item">
-                                    <div class="info-label">Dev Fund</div>
-                                    <div class="info-value">Rs. {{ number_format($student->development_fund ?? 0, 2) }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="fee-item">
-                                    <div class="info-label">Misc. Charges</div>
-                                    <div class="info-value">Rs. {{ number_format($student->misc_charges ?? 0, 2) }}</div>
+                                    <div class="info-label">Discount</div>
+                                    <div class="info-value">
+                                        Rs. {{ number_format($student->discount_amount ?? 0, 2) }}
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="col-12 mt-3">
                                 <div class="fee-total">
-                                    <strong>TOTAL AMOUNT PAID</strong> 
+                                    <strong>DISCOUNT AMOUNT</strong>
                                     <span class="underline-long">
-                                        Rs. {{ number_format(
-                                            ($student->admission_fee ?? 0) +
-                                            ($student->tuition_fee ?? 0) +
-                                            ($student->stationary_fee ?? 0) +
-                                            ($student->library_fee ?? 0) +
-                                            ($student->sports_fund ?? 0) +
-                                            ($student->security_deposit ?? 0) +
-                                            ($student->development_fund ?? 0) +
-                                            ($student->misc_charges ?? 0),
-                                            2
-                                        ) }}
-                                    </span><br>
-                                    @if($student->receipt_no)
-                                        <br><small>Receipt No: {{ $student->receipt_no }}</small>
+                                        Rs. {{ number_format($student->discount_amount ?? 0, 2) }}
+                                    </span>
+                                    <br>
+                                    <small>Discount is enabled for this student.</small>
+                                         @if($student->discount_due_date)
+                                        <br>
+                                        <small>
+                                            Due Date:
+                                            {{ \Carbon\Carbon::parse($student->discount_due_date)->format('d M Y') }}
+                                        </small>
                                     @endif
-                                    @if($student->fee_paid_date)
-                                        <br><small>Paid on: {{ \Carbon\Carbon::parse($student->fee_paid_date)->format('d M Y') }}</small>
+
+                                    @if($student->discount_notes)
+                                        <br>
+                                        <small>
+                                            Note: {{$student->discount_notes }}
+                                        </small>
+                                    @endif
+                                </div>
+                                
+                            </div>
+                        </div>
+
+                    @elseif($voucher && $voucher->items->count())
+
+                        <div class="row g-4">
+
+                            @foreach($voucher->items as $item)
+                                <div class="col-md-3">
+                                    <div class="fee-item">
+                                        <div class="info-label">
+                                            {{ $item->fee_name ?? 'Fee' }}
+                                        </div>
+                                        <div class="info-value">
+                                            Rs. {{ number_format($item->amount ?? 0, 2) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+
+                            <div class="col-12 mt-3">
+                                <div class="fee-total">
+                                    <strong>TOTAL AMOUNT</strong>
+                                    <span class="underline-long">
+                                        Rs. {{ number_format($voucher->items->sum('amount'), 2) }}
+                                    </span>
+
+                                    @if($voucher->due_date)
+                                        <br>
+                                        <small>
+                                            Due Date:
+                                            {{ \Carbon\Carbon::parse($voucher->due_date)->format('d M Y') }}
+                                        </small>
+                                    @endif
+
+                                    @if($voucher->notes)
+                                        <br>
+                                        <small>
+                                            Note: {{ $voucher->notes }}
+                                        </small>
                                     @endif
                                 </div>
                             </div>
+
                         </div>
+
                     @else
+
                         <div class="empty-state">
                             <i class="fa fa-money-bill-wave fa-3x mb-3 text-muted"></i>
                             <h5 class="text-muted">No fee details recorded</h5>
-                            <p>Fee information was not entered during admission.</p>
-                            <small>Click "Edit Details" to add fee records.</small>
+                            <p>Fee voucher has not been generated for this student.</p>
                         </div>
+
                     @endif
                 </div>
             </div>
@@ -370,10 +390,10 @@
             <a href="{{ route('parent.student.index') }}" class="btn btn-outline-secondary me-2">
                 <i class="fa fa-arrow-left me-1"></i> Back to List
             </a>
-          
         </div>
     </div>
 
 </div>
 
 @endsection
+

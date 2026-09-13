@@ -14,11 +14,18 @@ return new class extends Migration
         Schema::create('fee_challans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            $table->foreignId('voucher_id')->constrained()->onDelete('cascade');
             $table->string('month'); 
+            $table->string('challan_no', 50)->nullable()->unique();
+            $table->boolean('include_admission_fee')->default(false);
             $table->enum('status', ['pending','review','approved'])->default('pending');
+            $table->date('issue_date');
+            $table->date('due_date');
+            $table->decimal('total_amount', 10, 2);
+            $table->decimal('amount_after_due_date',10, 2);
+            $table->text('note')->nullable();
             $table->timestamps();
-            $table->unique(['student_id','voucher_id','month']); 
+            $table->softDeletes();
+            $table->unique(['student_id','month']); 
         });
     }
 

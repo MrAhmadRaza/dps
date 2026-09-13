@@ -1,14 +1,18 @@
 @extends('backend.layout.master')
 @section('title', $pageTitle ?? 'N/A')
 @section('content')
-
+<style>
+    .font-arial {
+        font-family: Arial, sans-serif;
+    }
+</style>
 <div class="container">
     <div class="page-inner">
 
         <div class="page-header d-flex justify-content-between align-items-center mb-4">
-            <h3>Add Academic Session</h3>
+            <h3 class="font-arial">Add Academic Session</h3>
             <a href="{{route('admin.academic-session.index')}}" class="btn btn-primary btn-sm">
-                <i class="fa fa-arrow-left me-1"></i> Back
+                <i class="fa fa-arrow-left me-1 "></i> Back
             </a>
         </div>
 
@@ -189,7 +193,7 @@
             <div class="card-body p-4">
                 <div class="table-responsive">
                     <table class="table table-hover text-center data-table align-middle table-striped">
-                        <thead class="table-light text-center">
+                        <thead class="table-light text-center font-arial">
                             <tr>
                                 <th>No</th>
                                 <th>Class</th>
@@ -228,11 +232,27 @@
                 emptyTable: "No Class & Section found"
             },
 
-            drawCallback: function () {
-                $('.dataTables_scrollBody').css('overflow', 'visible !important');
-            },
             initComplete: function () {
+                this.api().columns.adjust();
+                  $('.dataTables_scrollBody').css('overflow', 'visible !important');
+            },
+            drawCallback: function (settings) {
+                this.api().columns.adjust();
                 $('.dataTables_scrollBody').css('overflow', 'visible !important');
+
+                var api = this.api();
+                var pageInfo = api.page.info();
+
+                // Agar records empty hain to pagination + info hide
+                if (pageInfo.recordsTotal === 0) {
+                    $(api.table().container()).find('.dataTables_paginate').hide();
+                    $(api.table().container()).find('.dataTables_info').hide();
+                    $(api.table().container()).find('.dataTables_length').hide();
+                } else {
+                    $(api.table().container()).find('.dataTables_paginate').show();
+                    $(api.table().container()).find('.dataTables_info').show();
+                    $(api.table().container()).find('.dataTables_length').show();
+                }
             }
         });
 

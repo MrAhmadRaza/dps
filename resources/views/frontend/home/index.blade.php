@@ -10,29 +10,25 @@
     <div id="dpsHeroCarousel" class="carousel slide dps-hero-carousel" data-bs-ride="carousel" data-bs-interval="4500">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img src="{{asset('frontend_assets/dps_images/IMG-20260709-WA0055.jpg')}}" loading="lazy" alt="Students in classroom">
+                <img src="{{ asset('frontend_assets/dps_images/IMG-20260709-WA0055.jpg') }}" loading="lazy" alt="School Corridor">
             </div>
             <div class="carousel-item">
-                <img src="{{asset('frontend_assets/dps_images/IMG-20260709-WA0022.jpg')}}" loading="lazy" alt="Young students learning">
+                <img src="{{ asset('frontend_assets/dps_images/IMG-20260709-WA0045.jpg') }}" loading="lazy" alt="Students walking on campus">
             </div>
             <div class="carousel-item">
-                <img src="{{asset('frontend_assets/dps_images/IMG-20260709-WA0045.jpg')}}" loading="lazy" alt="Students walking on campus">
+                <img src="{{ asset('frontend_assets/dps_images/IMG-20260709-WA0013.jpg') }}" loading="lazy" alt="Group of graduating students">
             </div>
-            <div class="carousel-item"> 
-                <img src="{{asset('frontend_assets/dps_images/IMG-20260709-WA0013.jpg')}}" loading="lazy" alt="Group of graduating students">
+            <div class="carousel-item">
+                <img src="{{ asset('frontend_assets/dps_images/IMG-20260709-WA0069.jpg') }}" loading="lazy" alt="Campus view">
             </div>
-             <div class="carousel-item">
-                <img src="{{asset('frontend_assets/dps_images/IMG-20260709-WA0069.jpg')}}" loading="lazy" alt="Group of graduating students">
+            <div class="carousel-item">
+                <img src="{{ asset('frontend_assets/dps_images/IMG-20260709-WA0068.jpg') }}" loading="lazy" alt="School building">
             </div>
-             <div class="carousel-item">
-                <img src="{{asset('frontend_assets/dps_images/IMG-20260709-WA0068.jpg')}}" loading="lazy" alt="Group of graduating students">
-            </div>
-             <div class="carousel-item">
-                <img src="{{asset('frontend_assets/dps_images/IMG-20260709-WA0110.jpg')}}" loading="lazy" alt="Group of graduating students">
+            <div class="carousel-item">
+                <img src="{{ asset('frontend_assets/dps_images/IMG-20260709-WA0110.jpg') }}" loading="lazy" alt="Students">
             </div>
         </div>
 
-        <!-- Arrows -->
         <button class="carousel-control-prev" type="button" data-bs-target="#dpsHeroCarousel" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
@@ -44,77 +40,79 @@
     </div>
 
     <div class="dps-hero-overlay"></div>
-
-    <div class="dps-hero-content">
-        <div class="container">
-            <div class="row justify-content-center text-center">
-                <div class="col-lg-9">
-                    <span class="dps-eyebrow"><i class="fa-solid fa-graduation-cap"></i> Dunyapur Public School</span>
-                    <h1 class="dps-hero-title">Empowering Tomorrow's<br class="d-none d-md-block"> Leaders, Together</h1>
-                    <p class="dps-hero-tagline">
-                        One secure portal to stay close to your child's school life — attendance, fees,
-                        results and school circulars, updated in real time.
-                    </p>
-                    <div class="dps-hero-actions">
-                        <a href="{{ route('parent.signIn') }}" class="btn dps-btn-primary dps-btn-lg">
-                            <i class="fa-solid fa-right-to-bracket"></i> Access Parent Portal
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </header>
 {{-- ============ TRUST / STATS STRIP ============ --}}
 <section class="dps-stats" id="stats">
     <div class="container">
         <div class="row g-4">
-            <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+            <div class="col-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
                 <div class="dps-stat-item">
-                    <i class="fa-solid fa-book-open"></i>
-                    <h3>{{$academicSession ?? '0'}}+</h3>
-                    <p>Academic Sessions</p>
+                     <i class="fas fa-user-plus"></i>
+                    <h3>2.3k</h3>
+                    <p>Active Admissions</p>
                 </div>
             </div>
 
-            <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="0">
+             <div class="col-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
                 <div class="dps-stat-item">
-                    <i class="fa-solid fa-door-open"></i>
-                    <h3>{{$admissions ?? 0}}+</h3>
-                    <p>Admissions</p>
-                </div>
-            </div>
-
-             <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
-                <div class="dps-stat-item">
-                   <i class="fa-solid fa-users"></i>
-                    <h3>{{$parents ?? 0}}+</h3>
-                    <p>Parents</p>
+                   <i class="fas fa-user-graduate"></i>
+                    <h3>66k</h3>
+                    <p>Alumni</p>
                 </div>
             </div>
             
-            <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="col-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
                 <div class="dps-stat-item">
-                    <i class="fa-solid fa-file-invoice-dollar"></i>
-                    <h3>{{$hallans ?? 0}}+</h3>
-                    <p>Challans</p>
+                <i class="fas fa-users"></i>
+                    <h3>30k</h3>
+                    <p>Parents</p>
                 </div>
             </div>
            
         </div>
     </div>
 </section>
+
+{{-- ============ PRINCIPAL MESSAGE ============ --}}
+<section class="dps-principal">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-4 text-center" data-aos="fade-right">
+                <div class="dps-principal-photo-wrap">
+                    <img src="{{asset('frontend_assets/dps_images/principal.jpeg')}}" loading="lazy" alt="Portrait of the Principal of DPS Dunyapur" class="dps-principal-photo">
+                </div>
+                <h5 class="dps-principal-name">Mr. Muhammad Amjad </h5>
+                <span class="dps-principal-role">Principal, DPS Dunyapur</span>
+            </div>
+            <div class="col-lg-8" data-aos="fade-left">
+                <i class="fa-solid fa-quote-left dps-quote-icon"></i>
+                <span class="dps-section-eyebrow">Principal's Message</span>
+                <h2 class="dps-section-title">"Every child deserves a school that truly sees them."</h2>
+                <p class="dps-about-text">
+                    At DPS Dunyapur, we believe education is a partnership between school and home. The Parent
+                    Portal is our commitment to that partnership — bringing you closer to your child's daily
+                    progress, achievements and needs, with complete transparency and care.
+                </p>
+                <p class="dps-about-text">
+                    On behalf of our entire faculty, thank you for trusting us with your child's future. We look
+                    forward to walking this journey together.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
 {{-- ============ ABOUT ============ --}}
 <section class="dps-about" id="about">
     <div class="container">
         <div class="row align-items-center g-5">
             <div class="col-lg-6" data-aos="fade-right">
                 <div class="dps-about-img-wrap">
-                    <img src="{{asset('frontend_assets/dps_images/IMG-20260709-WA0044.jpg')}}" loading="lazy" alt="DPS Dunyapur campus building" class="dps-about-img-main">
+                    <img src="{{asset('frontend_assets/dps_images/building.jpeg')}}" loading="lazy" alt="DPS Dunyapur campus building" class="dps-about-img-main">
                     <div class="dps-badge-float">
                         <i class="fa-solid fa-circle-check"></i>
                         <div>
-                            <strong>Trusted Since 1985</strong>
+                            <strong>Trusted Since 1992</strong>
                             <span>Four decades of academic legacy</span>
                         </div>
                     </div>
@@ -259,35 +257,6 @@
                     <h5>Digital Transparency</h5>
                     <p>Real-time access to attendance, results and fee records means no surprises — just clear, honest visibility.</p>
                 </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-{{-- ============ PRINCIPAL MESSAGE ============ --}}
-<section class="dps-principal">
-    <div class="container">
-        <div class="row align-items-center g-5">
-            <div class="col-lg-4 text-center" data-aos="fade-right">
-                <div class="dps-principal-photo-wrap">
-                    <img src="{{asset('frontend_assets/dps_images/principal.jpeg')}}" loading="lazy" alt="Portrait of the Principal of DPS Dunyapur" class="dps-principal-photo">
-                </div>
-                <h5 class="dps-principal-name">Mr. Muhammad Amjad </h5>
-                <span class="dps-principal-role">Principal, DPS Dunyapur</span>
-            </div>
-            <div class="col-lg-8" data-aos="fade-left">
-                <i class="fa-solid fa-quote-left dps-quote-icon"></i>
-                <span class="dps-section-eyebrow">Principal's Message</span>
-                <h2 class="dps-section-title">"Every child deserves a school that truly sees them."</h2>
-                <p class="dps-about-text">
-                    At DPS Dunyapur, we believe education is a partnership between school and home. The Parent
-                    Portal is our commitment to that partnership — bringing you closer to your child's daily
-                    progress, achievements and needs, with complete transparency and care.
-                </p>
-                <p class="dps-about-text">
-                    On behalf of our entire faculty, thank you for trusting us with your child's future. We look
-                    forward to walking this journey together.
-                </p>
             </div>
         </div>
     </div>

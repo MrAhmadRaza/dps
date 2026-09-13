@@ -19,6 +19,10 @@ return new class extends Migration
             $table->decimal('total_amount', 10, 2)->nullable()->default(0);
             $table->text('notes')->nullable();
             $table->timestamps();
+            $table->unique(
+                ['academic_session_id', 'session_item_id'],
+                'unique_session_session_item'
+            );
         });
     }
 

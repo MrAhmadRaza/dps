@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('transaction_id')->nullable();
             $table->string('voucher_image');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

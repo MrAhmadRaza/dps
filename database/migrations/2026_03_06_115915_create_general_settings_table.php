@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name')->nullable();
             $table->text('account_no');
+            $table->string('one_bill_prefix', 50)->nullable();
+            $table->decimal('late_fee_fine' , 10 , 2)->nullable();
             $table->timestamps();
         });
     }
