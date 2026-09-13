@@ -32,9 +32,7 @@ img { max-width: 100%; display: block; }
 
 ::selection { background: var(--dps-accent); color: var(--dps-navy-1); }
 
-/* Reset icon-font rendering so Font Awesome glyphs never inherit an
-    oversized line-height/letter-spacing from their parent (this is what
-    causes icons to look "broken" or ghosted/misaligned inside pills and buttons) */
+/* Font Awesome fix */
 .fa-solid, .fa-brands, .fa-regular, [class^="fa-"], [class*=" fa-"] {
     display: inline-block;
     line-height: 1;
@@ -100,8 +98,6 @@ img { max-width: 100%; display: block; }
 
 .dps-btn-lg { padding: 0.95rem 2.1rem; font-size: 1rem; }
 
-/* Keep every icon inside a button/pill at a consistent, centered size
-    regardless of which Font Awesome glyph is used */
 .dps-btn-primary i,
 .dps-btn-ghost i,
 .dps-btn-outline i {
@@ -113,68 +109,99 @@ img { max-width: 100%; display: block; }
 
 /* ===== Navbar ===== */
 .dps-navbar {
-    padding: 1rem 0;
-    /* background: rgba(15, 23, 42, 0.55); */
-    /* backdrop-filter: blur(14px); */
-    /* -webkit-backdrop-filter: blur(14px); */
-    /* border-bottom: 1px solid rgba(255,255,255,0.08); */
+   padding: 0.5rem 0;
+    background: #0F172A;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    position: sticky;          
+    top: 0;
+    z-index: 1000;
     transition: all 0.35s ease;
 }
+
 .dps-navbar.dps-scrolled {
-    padding: 0.6rem 0;
-    background: rgba(15, 23, 42, 0.92);
-    box-shadow: 0 10px 30px -12px rgba(0,0,0,0.5);
+    padding: 0.7rem 0;
+    background: #0B1220;
+    box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.45);
 }
 
-.dps-brand { display: flex; align-items: center; gap: 0.7rem; }
+.dps-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
 .dps-brand-mark {
-    width: 44px; height: 44px;
+    width: 64px;
+    height: 64px;
     border-radius: 12px;
-    background: linear-gradient(135deg, var(--dps-primary), var(--dps-accent));
-    display: flex; align-items: center; justify-content: center;
-    color: #fff; font-size: 1.25rem;
-    box-shadow: 0 8px 18px -6px rgba(99,102,241,0.6);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
+    overflow: hidden;
 }
+
+.dps-brand-mark img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 52.7% 41.7%;
+    /* transform: scale(1.92); */
+    transform-origin: 52.7% 41.7%;
+}
+
 .dps-brand-text {
-    display: flex; flex-direction: column; line-height: 1.1;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
     font-family: 'Poppins', sans-serif;
-    color: #fff;
+    color: #ffffff;
     font-size: 1.02rem;
-    letter-spacing: 0.03em;
 }
-.dps-brand-text strong { color: #fff; font-weight: 700; }
+
+.dps-brand-text strong {
+    color: #ffffff;
+    font-weight: 700;
+}
+
 .dps-brand-text small {
     font-family: 'Inter', sans-serif;
     font-size: 0.65rem;
-    color: #fff;
+    color: rgba(255, 255, 255, 0.7);
     letter-spacing: 0.06em;
-    font-weight: 400;
     text-transform: uppercase;
 }
 
 .dps-nav-links .nav-link {
-    color: rgba(255,255,255,0.82);
+    color: rgba(255, 255, 255, 0.85) !important;
     font-weight: 500;
     font-size: 0.92rem;
     padding: 0.5rem 1rem;
     position: relative;
     transition: color 0.25s ease;
 }
-.dps-nav-links .nav-link:hover { color: #fff; }
+
+.dps-nav-links .nav-link:hover {
+    color: #ffffff !important;
+}
+
 .dps-nav-links .nav-link::after {
     content: '';
     position: absolute;
-    left: 1rem; right: 1rem; bottom: 0.25rem;
+    left: 1rem;
+    right: 1rem;
+    bottom: 0.25rem;
     height: 2px;
     background: var(--dps-accent);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.25s ease;
 }
-.dps-nav-links .nav-link:hover::after { transform: scaleX(1); }
 
-.dps-nav-cta { margin-left: 0.5rem; }
+.dps-nav-links .nav-link:hover::after {
+    transform: scaleX(1);
+}
 
 /* ===== Hero ===== */
 .dps-hero {
@@ -183,29 +210,45 @@ img { max-width: 100%; display: block; }
     display: flex;
     align-items: center;
     overflow: hidden;
-    background: var(--dps-navy-1);
-}
-.dps-hero-carousel, .dps-hero-carousel .carousel-inner, .dps-hero-carousel .carousel-item {
-    position: absolute; inset: 0; height: 100%;
-}
-.dps-hero-carousel .carousel-item img {
-    width: 100%; height: 100%; object-fit: cover;
-    transform: scale(1.08);
-    animation: dpsKenBurns 9s ease-in-out infinite alternate;
-}
-@keyframes dpsKenBurns {
-    from { transform: scale(1.08) translate(0,0); }
-    to { transform: scale(1.16) translate(-1%, -1%); }
+    background: #0F172A;
 }
 
-/* Hero Carousel Arrows */
+.dps-hero-carousel,
+.dps-hero-carousel .carousel-inner,
+.dps-hero-carousel .carousel-item {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+}
+
+.dps-hero-carousel .carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+}
+
+.dps-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(15, 23, 42, 0.25) 0%,
+        rgba(15, 23, 42, 0.15) 40%,
+        rgba(15, 23, 42, 0.35) 100%
+    );
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Carousel Arrows */
 .dps-hero-carousel .carousel-control-prev,
 .dps-hero-carousel .carousel-control-next {
     width: 52px;
     height: 52px;
-    background: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.18);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.3);
+    border: 1px solid rgba(255,255,255,0.35);
     border-radius: 50%;
     top: 55%;
     transform: translateY(-50%);
@@ -216,106 +259,25 @@ img { max-width: 100%; display: block; }
 
 .dps-hero-carousel .carousel-control-prev:hover,
 .dps-hero-carousel .carousel-control-next:hover {
-    background: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.32);
     border-color: #fff;
     opacity: 1;
-    transform: translateY(-50%);
 }
 
-.dps-hero-carousel .carousel-control-prev {
-    left: 30px;
-}
-
-.dps-hero-carousel .carousel-control-next {
-    right: 30px;
-}
+.dps-hero-carousel .carousel-control-prev { left: 30px; }
+.dps-hero-carousel .carousel-control-next { right: 30px; }
 
 .dps-hero-carousel .carousel-control-prev-icon,
 .dps-hero-carousel .carousel-control-next-icon {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     background-size: 100%;
-    filter: brightness(0) invert(1); /* White arrows */
+    filter: brightness(0) invert(1);
 }
 
 @media (max-width: 768px) {
     .dps-hero-carousel .carousel-control-prev { left: 15px; }
     .dps-hero-carousel .carousel-control-next { right: 15px; }
-}
-.dps-hero-overlay {
-    position: absolute; inset: 0;
-    background:
-        linear-gradient(180deg, rgba(15,23,42,0.75) 0%, rgba(15,23,42,0.55) 45%, rgba(15,23,42,0.92) 100%),
-        linear-gradient(120deg, rgba(99,102,241,0.35), rgba(15,23,42,0.2));
-    z-index: 1;
-}
-/* Reserve enough top space so hero content always clears the fixed,
-    blurred navbar — prevents the badge/logo from overlapping it */
-.dps-hero-content { position: relative; z-index: 2; width: 100%; padding-top: 6.5rem; }
-
-.dps-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    background: rgba(165, 180, 252, 0.15);
-    border: 1px solid rgba(165, 180, 252, 0.4);
-    color: #fff;
-    padding: 0.55rem 1.2rem;
-    border-radius: 50px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    margin-bottom: 1.5rem;
-    box-shadow: none;
-}
-.dps-eyebrow i {
-    font-size: 0.95rem;
-    line-height: 1;
-}
-
-.dps-hero-title {
-    color: #fff;
-    font-weight: 800;
-    font-size: clamp(2.4rem, 5vw, 4rem);
-    line-height: 1.15;
-    margin-bottom: 1.3rem;
-    text-shadow: 0 8px 30px rgba(0,0,0,0.35);
-}
-
-.dps-hero-tagline {
-    color: rgba(255,255,255,0.85);
-    font-size: clamp(1rem, 1.4vw, 1.2rem);
-    max-width: 640px;
-    margin: 0 auto 2.3rem;
-    line-height: 1.7;
-}
-
-.dps-hero-actions {
-    display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap;
-}
-
-.dps-hero-indicators {
-    position: absolute; bottom: 3.4rem; left: 0; right: 0;
-    display: flex; justify-content: center; gap: 0.5rem; z-index: 3;
-}
-.dps-hero-indicators button {
-    width: 32px; height: 4px; border: none; border-radius: 4px;
-    background: rgba(255,255,255,0.35);
-    transition: all 0.3s ease;
-}
-.dps-hero-indicators button.active { background: var(--dps-accent); width: 46px; }
-
-.dps-scroll-cue {
-    position: absolute; bottom: 1.2rem; left: 50%; transform: translateX(-50%);
-    color: rgba(255,255,255,0.75);
-    font-size: 1.4rem;
-    z-index: 3;
-    animation: dpsBounce 2s infinite;
-}
-@keyframes dpsBounce {
-    0%, 100% { transform: translate(-50%, 0); }
-    50% { transform: translate(-50%, 8px); }
 }
 
 /* ===== Stats Strip ===== */
@@ -613,6 +575,18 @@ section { padding: 6rem 0; }
 }
 
 /* ===== Responsive ===== */
+
+/* Large desktops / big screens: let the seal breathe a little more */
+@media (min-width: 1200px) {
+    .dps-brand-mark { width: 74px; height: 74px; }
+    .dps-brand-text { font-size: 1.08rem; }
+}
+
+/* Tablets / small desktops */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .dps-brand-mark { width: 68px; height: 68px; }
+}
+
 @media (max-width: 991.98px) {
     .dps-nav-links { margin: 1rem 0; gap: 0.2rem; }
     .dps-nav-cta { align-self: flex-start; }
@@ -620,11 +594,22 @@ section { padding: 6rem 0; }
     .dps-hero { min-height: 92vh; }
     .dps-badge-float { position: static; margin-top: -2rem; }
     .dps-gallery-big { min-height: 260px; }
+    .dps-brand-mark { width: 56px; height: 56px; }
 }
 
+/* Small phones: keep the logo readable without crowding the navbar */
 @media (max-width: 575.98px) {
     .dps-hero-content { padding-top: 6rem; }
     .dps-hero-indicators { bottom: 4.4rem; }
     .dps-scroll-cue { bottom: 1rem; }
     .dps-stat-item h3 { font-size: 1.6rem; }
+    .dps-brand-mark { width: 50px; height: 50px; border-radius: 10px; }
+    .dps-brand-text { font-size: 0.88rem; }
+    .dps-brand-text small { font-size: 0.58rem; }
+}
+
+/* Extra-small phones */
+@media (max-width: 359.98px) {
+    .dps-brand-mark { width: 44px; height: 44px; }
+    .dps-brand-text small { display: none; }
 }

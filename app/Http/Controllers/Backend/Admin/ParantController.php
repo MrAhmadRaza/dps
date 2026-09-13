@@ -19,7 +19,9 @@ class ParantController extends Controller
         $pageTitle = 'Parents';
         if ($request->ajax()) {
             // 🔹 Fetch all parents
-            $query = Parant::latest();
+            $query = Parant::whereHas('students', function ($query) {
+                $query->where('status', 'active');
+            })->latest();
             return datatables()->of($query)
                 // Index column
                 ->addIndexColumn()

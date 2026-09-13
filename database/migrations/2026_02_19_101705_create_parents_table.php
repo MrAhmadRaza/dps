@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('parents', function (Blueprint $table) {
             $table->id();
-            $table->text('portal_id')->unique();
-            $table->string('password');
             $table->string('father_name');
-            $table->string('father_nic',15)->nullable()->unique();
+            $table->string('father_nic',15)->unique();
+            $table->string('password');
             $table->string('mother_name')->nullable();
             $table->string('occupation');
             $table->decimal('income', 10, 2)->nullable();

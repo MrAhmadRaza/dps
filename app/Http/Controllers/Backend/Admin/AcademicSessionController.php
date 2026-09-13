@@ -28,32 +28,52 @@ class AcademicSessionController extends Controller
                 return Carbon::parse($session->start_date)->format('d M Y') ?? 'N/A';
             })
 
+            ->filterColumn('start_date', function ($query, $keyword) {
+                $query->whereRaw("DATE_FORMAT(start_date, '%d %b %Y') LIKE ?", ["%{$keyword}%"]);
+            })
+
              ->addColumn('end_date', function (AcademicSession $session) {
                 return Carbon::parse($session->end_date)->format('d M Y') ?? 'N/A';
             })
 
-            ->addColumn('created_at', function (AcademicSession $session) {
-                return Carbon::parse($session->created_at)->format('d M Y') ?? 'N/A';
+            ->filterColumn('end_date', function ($query, $keyword) {
+                $query->whereRaw("DATE_FORMAT(end_date, '%d %b %Y') LIKE ?", ["%{$keyword}%"]);
             })
-        
-            ->filterColumn('created_at', function ($query, $keyword) {
-                $keyword = trim($keyword);
-                $query->where(function ($q) use ($keyword) {
-                    $q->whereRaw("DATE_FORMAT(CONVERT_TZ(created_at, '+00:00', '+01:00'), '%d %b %Y, %h:%i %p') LIKE ?", ["%$keyword%"])
-                        ->orWhereRaw("DATE_FORMAT(created_at, '%d %b %Y') LIKE ?", ["%$keyword%"])
-                        ->orWhereRaw("DATE_FORMAT(created_at, '%M %Y') LIKE ?", ["%$keyword%"])
-                        ->orWhereRaw("DATE_FORMAT(created_at, '%d %M') LIKE ?", ["%$keyword%"])
-                        ->orWhereRaw("DATE_FORMAT(created_at, '%h:%i %p') LIKE ?", ["%$keyword%"])
-                        ->orWhereRaw("DATE_FORMAT(created_at, '%Y-%m-%d') LIKE ?", ["%$keyword%"]);
-                });
+
+           ->addColumn('status', function (AcademicSession $session) {
+                if ( $session->status === 'active') {
+                    return '<span class="badge bg-primary px-3 py-2 ">
+                                <i class="fas fa-check-circle me-1"></i> Active
+                            </span>';
+                } else {
+                    return '<span class="badge bg-danger px-3 py-2 ">
+                                <i class="fas fa-times-circle me-1"></i> Inactive
+                            </span>';
+                }
             })
+
+           ->filterColumn('status', function ($query, $keyword) {
+                $keyword = strtolower(trim($keyword));
+
+                if (str_contains($keyword, 'active') && !str_contains($keyword, 'in')) {
+                    $query->where('status', 'active'); 
+                } 
+                elseif (str_contains($keyword, 'inactive') || str_contains($keyword, 'in active') || $keyword === 'in') {
+                    $query->where('status', 'inactive');
+                } 
+                else {
+                    // normal number search (0 or 1)
+                    $query->where('status', 'like', "%{$keyword}%");
+                }
+            })
+                
             ->addColumn('action', function (AcademicSession $session) {
                 $viewRoute = route('admin.academic-session.view.index', $session->id);
                 $editRoute = route('admin.academic-session.edit', $session->id);
                 $deleteRoute = route('admin.academic-session.destroy', $session->id);
                 return  view('backend.partials.session-action',compact('viewRoute','editRoute', 'deleteRoute'))->render();
             })
-            ->rawColumns(['start_date','end_date','created_at','action'])
+            ->rawColumns(['start_date','end_date','status','action'])
             ->make(true);
         }
         return view('backend.academic-session.show-session', compact('pageTitle'));

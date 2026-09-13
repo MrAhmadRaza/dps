@@ -1,7 +1,18 @@
 @extends('backend.layout.master')
 @section('title', $pagetitle ?? 'Category')
-
 @section('content')
+<style>
+.table thead th {
+    font-size: 0.95rem !important;
+    text-transform: capitalize !important;
+    letter-spacing: 0px !important;
+    padding: 10px 15px 6px 10px !important;
+    text-align: center !important;                      
+}
+.font-arial {
+    font-family: Arial, sans-serif;
+}
+</style>
 <div class="container">
     <div class="page-inner">
 
@@ -17,6 +28,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
+    
         {{-- Filters --}}
         <div class="row mb-3 align-items-end">
             <div class="col-md-3">
@@ -39,22 +51,23 @@
             </div>
 
             <div class="col-md-3">
-                <button id="filterBtn" class="btn btn-primary w-40">
-                    <i class="fa fa-search"></i> Search
-                </button>
-                 <a id="printBtn" class="btn btn-success w-50">
-                    <i class="fa fa-print"></i> Print
-                </a>
+                <label class="d-block">&nbsp;</label>
+                <div class="d-flex gap-2">
+                    <button id="filterBtn" class="btn btn-primary flex-fill">
+                        <i class="fa fa-search"></i> Search
+                    </button>
+                    <a id="printBtn" class="btn btn-success flex-fill">
+                        <i class="fa fa-print"></i> Print
+                    </a>
+                </div>
             </div>
-
-             
         </div>
 
         {{-- Table --}}
         <div class="card">
             <div class="card-body">
                 <table class="table table-hover text-center data-table align-middle table-striped">
-                    <thead>
+                    <thead class="table-light text-center font-arial">
                         <tr>
                             <th>No</th>
                             <th>Category</th>
@@ -103,14 +116,41 @@
                 processing: '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>',
                 emptyTable: "No categories found"
             },
-            drawCallback: function () {
-            $('.dataTables_scrollBody').css('overflow', 'visible !important');
-            },
             initComplete: function () {
+                this.api().columns.adjust();
+                  $('.dataTables_scrollBody').css('overflow', 'visible !important');
+            },
+            drawCallback: function (settings) {
+                this.api().columns.adjust();
                 $('.dataTables_scrollBody').css('overflow', 'visible !important');
+
+                var api = this.api();
+                var pageInfo = api.page.info();
+
+                // Agar records empty hain to pagination + info hide
+                if (pageInfo.recordsTotal === 0) {
+                    $(api.table().container()).find('.dataTables_paginate').hide();
+                    $(api.table().container()).find('.dataTables_info').hide();
+                    $(api.table().container()).find('.dataTables_length').hide();
+                } else {
+                    $(api.table().container()).find('.dataTables_paginate').show();
+                    $(api.table().container()).find('.dataTables_info').show();
+                    $(api.table().container()).find('.dataTables_length').show();
+                }
             }
         });
          // Adjust columns on window resize
+         $('body').on('expanded.pushMenu collapsed.pushMenu', function() {
+            setTimeout(function() {
+                table.columns.adjust().draw(false);  
+            }, 350);
+        });
+
+        $(document).on('click', '[data-widget="pushmenu"], .sidebar-toggle, .sidebar-toggler, .nav-link[data-toggle="sidebar"]', function() {
+            setTimeout(function() {
+                table.columns.adjust().draw(false);
+            }, 300);
+        });
         $(window).on('resize', function() {
             table.columns.adjust().draw(false);
         });
@@ -131,9 +171,6 @@
                     "&to_date=" + to;
             window.open(url, '_blank');
         });
-
-        
-
     });
 </script>
 @endsection

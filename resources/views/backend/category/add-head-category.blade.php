@@ -1,7 +1,18 @@
 @extends('backend.layout.master')
 @section('title', $pageTitle ?? 'N/A')
 @section('content')
-
+<style>
+.table thead th {
+    font-size: 0.95rem !important;
+    text-transform: capitalize !important;
+    letter-spacing: 0px !important;
+    padding: 10px 15px 6px 10px !important;
+    text-align: center !important;                      
+}
+.font-arial {
+    font-family: Arial, sans-serif;
+}
+</style>
 <div class="container">
     <div class="page-inner">
 
@@ -149,7 +160,7 @@
                     </div>
                         <div class="table-responsive">
                             <table class="table table-hover text-center data-table align-middle table-striped">
-                                <thead class="table-light text-center">
+                                <thead class="table-light text-center font-arial">
                                     <tr>
                                         <th>No</th>
                                         <th>Head Name</th>
@@ -205,15 +216,32 @@
                 emptyTable: "No heads found under category"
             },
 
-            drawCallback: function () {
-                $('.dataTables_scrollBody').css('overflow', 'visible !important');
-            },
             initComplete: function () {
+                this.api().columns.adjust();
+                  $('.dataTables_scrollBody').css('overflow', 'visible !important');
+            },
+            drawCallback: function (settings) {
+                this.api().columns.adjust();
                 $('.dataTables_scrollBody').css('overflow', 'visible !important');
+
+                var api = this.api();
+                var pageInfo = api.page.info();
+
+                // Agar records empty hain to pagination + info hide
+                if (pageInfo.recordsTotal === 0) {
+                    $(api.table().container()).find('.dataTables_paginate').hide();
+                    $(api.table().container()).find('.dataTables_info').hide();
+                    $(api.table().container()).find('.dataTables_length').hide();
+                } else {
+                    $(api.table().container()).find('.dataTables_paginate').show();
+                    $(api.table().container()).find('.dataTables_info').show();
+                    $(api.table().container()).find('.dataTables_length').show();
+                }
             }
         });
 
-        $('body').on('expanded.pushMenu collapsed.pushMenu', function() {
+          // Adjust columns on window resize
+         $('body').on('expanded.pushMenu collapsed.pushMenu', function() {
             setTimeout(function() {
                 table.columns.adjust().draw(false);  
             }, 350);

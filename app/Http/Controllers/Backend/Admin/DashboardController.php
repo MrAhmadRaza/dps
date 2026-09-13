@@ -16,9 +16,9 @@ class DashboardController extends Controller
     public function index(): View
     {
         $pageTitle = 'Dashboard'; 
-        $sessions = AcademicSession::latest()->count();
-        $students = Student::latest()->count();
-        $challans = FeeChallan::latest()->count();
-        return view('backend.dashboard.dashboard',compact('pageTitle','sessions','students','challans'));
+        // $sessions = AcademicSession::latest()->count();
+        // $students = Student::latest()->count();
+        // $challans = FeeChallan::latest()->count();
+        return view('backend.dashboard.dashboard',compact('pageTitle'));
     }
 }

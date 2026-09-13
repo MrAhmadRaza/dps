@@ -23,12 +23,12 @@ class ParantSignInController extends Controller
     {
         // Validation Check
         $validated = $request->validate([
-            'portal_id' => 'required',
+            'father_nic' => 'required',
             'password' => 'required|min:4',
         ]);
         // Check Login Credentials for Parent
         $attempt = auth()->guard('parents')->attempt([
-            'portal_id' => $validated['portal_id'],
+            'father_nic' => $validated['father_nic'],
             'password' => $validated['password'],
         ]);
            

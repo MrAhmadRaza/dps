@@ -1,5 +1,3 @@
-{{-- resources/views/frontend/include/footer.blade.php --}}
-
 <!-- ============ FOOTER ============ -->
 <footer class="dps-footer">
     <div class="dps-footer-glow"></div>
@@ -7,8 +5,8 @@
         <div class="row gy-5 dps-footer-top">
             <div class="col-lg-4">
                 <a href="{{ url('/') }}" class="dps-brand dps-footer-brand">
-                    <span class="dps-brand-mark">
-                        <i class="fa-solid fa-graduation-cap"></i>
+                     <span class="dps-brand-mark">
+                        <img src="{{ asset('upload/logo/logo.png') }}" alt="Dunyapur Public School Logo" loading="eager">
                     </span>
                     <span class="dps-brand-text">
                         DPS <strong>DUNYAPUR</strong>

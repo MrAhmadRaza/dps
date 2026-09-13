@@ -3,9 +3,9 @@
     <div class="container">
         <a class="navbar-brand dps-brand" href="{{ url('/') }}">
             <span class="dps-brand-mark">
-                <i class="fa-solid fa-graduation-cap"></i>
+                <img src="{{ asset('upload/logo/logo.png') }}" alt="Dunyapur Public School Logo" loading="eager">
             </span>
-            <span class="dps-brand-text">
+            <span class="dps-brand-text d-none d-sm-flex">
                 DPS <strong>DUNYAPUR</strong>
                 <small>Dunyapur Public School</small>
             </span>

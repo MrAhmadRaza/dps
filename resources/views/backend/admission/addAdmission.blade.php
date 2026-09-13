@@ -6,6 +6,10 @@
         background: #f4f7fb;
     }
 
+    .font-arial {
+        font-family: Arial, sans-serif;
+    }
+
     /* Full Width Card */
     #admissionForm {
         background: #ffffff;
@@ -122,7 +126,7 @@
         background: linear-gradient(135deg, #0d6efd, #4e8cff);
         border: none;
         padding: 0.55rem 1.8rem;
-        border-radius: 10px;
+        /* border-radius: 10px; */
         font-weight: 500;
         transition: 0.25s ease;
     }
@@ -158,7 +162,7 @@
 <div class="container">
     <div class="page-inner">
         <div class="page-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-            <h3 class="mb-2 mb-md-0">Add Admission</h3>
+            <h3 class="mb-2 mb-md-0 font-arial ">Add Admission</h3>
             <a href="{{ route('admin.admission.index') }}" class="btn btn-primary">
                 <i class="fa fa-arrow-left me-1"></i> Back
             </a>
@@ -175,11 +179,34 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
-          {{-- Session Msg --}}
+
+        {{-- Session Msg --}}
         @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div class="alert alert-success alert-dismissible fade show d-flex align-items-center"
+                role="alert">
+                <strong>{{ session('success') }}</strong>
+
+                @if(session('admission_student_id'))
+                    <a href="{{ route('admin.print.admission', ['id' => session('admission_student_id')]) }}"
+                    target="_blank"
+                    class="btn btn-primary btn-sm ms-3">
+                        <i class="fas fa-print"></i> Print Application
+                    </a>
+                @endif
+
+                @if(session('admission_challan_id'))
+                    <a href="{{ route('admin.challan.print', session('admission_challan_id')) }}"
+                    target="_blank"
+                    class="btn btn-success btn-sm ms-2">
+                        <i class="fas fa-file-invoice"></i> Print Challan
+                    </a>
+                @endif
+
+                <button type="button"
+                        class="btn-close ms-auto"
+                        data-bs-dismiss="alert"
+                        aria-label="Close">
+                </button>
             </div>
         @endif
         {{-- End Session Msg --}}
@@ -223,16 +250,18 @@
                         <div class="col-md-6">
                             <label>Gender <span class="text-danger">*</span></label>
                             <select name="gender" class="form-select" required>
-                                <option value="">Select</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
+                                <option value="" {{ old('gender') ? '' : 'selected' }}>Select</option>
+                                <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
+                                <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
                             </select>
                             <div class="invalid-feedback">Please select gender.</div>
                         </div>
 
                         <div class="col-md-6">
                             <label>B-Form Number (Optional)</label>
-                            <input type="text" name="b_form_no" value="{{old('b_form_no')}}" class="form-control" placeholder="B-Form Number">
+                            <input type="text" name="b_form_no" id="b_form_no" value="{{old('b_form_no')}}" class="form-control" placeholder="12345-1234567-1"
+                                maxlength="15"
+                                inputmode="numeric">
                         </div>
 
                         <div class="col-md-6">
@@ -250,30 +279,23 @@
                             <input type="text" name="domicile" value="{{old('domicile')}}" class="form-control" placeholder="Domicile ">
                         </div>
                         <!-- Parent Fields -->
-
-                           <div class="col-md-6">
-                                <label>Parent Portal Id <span class="text-danger">*</span></label>
-                                <select id="select-portal" class="form-control select2" name="portal_id" required>
-                                    <option value="">Select Portal</option>
-                               
-                                </select>
-                            </div>
-
-                             <div class="col-md-6">
-                                <label>Password <span class="text-danger">*</span></label>
-                                <input type="text" name="password" id="password" readonly value="{{old('password')}}" class="form-control" placeholder="password "">
-                            </div>
-
+                       
                         <div class="col-md-6">
+                            <label>Father NIC <span class="text-danger">*</span></label>
+                            <input type="text" name="father_nic" id="father_nic" value="{{old('father_nic')}}" class="form-control" placeholder="12345-1234567-1" maxlength="15"
+                                inputmode="numeric" required>
+                        </div>
+
+                         <div class="col-md-6">
                             <label>Father Name <span class="text-danger">*</span></label>
                             <input type="text" name="father_name" id="father_name" value="{{old('father_name')}}" class="form-control" placeholder=" Father Name" required>
                             <div class="invalid-feedback">Please enter father's full name.</div>
                         </div>
 
-                        <div class="col-md-6">
-                            <label>Father NIC <span class="text-danger">*</span></label>
-                            <input type="text" name="father_nic" id="father_nic" value="{{old('father_nic')}}" class="form-control" placeholder="Father Nic" required>
-                        </div>
+                         <div class="col-md-6">
+                                <label>Password <span class="text-danger">*</span></label>
+                                <input type="text" name="password" id="password" readonly value="{{old('password')}}" class="form-control" placeholder="password "">
+                            </div>
 
                         <div class="col-md-6">
                             <label>Mother Name (Optional)</label>
@@ -287,19 +309,40 @@
                         </div>
 
                          <div class="col-md-6">
-                            <label>Income</label>
+                            <label>Income (Optional)</label>
                             <input type="text" name="income" id="income" value="{{old('income')}}" class="form-control" placeholder="0.00">
                         </div>
 
                         <div class="col-md-6">
-                            <label> Address <span class="text-danger">*</span></label>
-                            <textarea name="address" id="address" class="form-control" value="{{old('address')}}" rows="2" placeholder="Address" required></textarea>
+                            <label>Contact Number <span class="text-danger">*</span></label>
+                            <input type="tel" name="contact_no" id="contact_no" value="{{old('contact_no')}}" class="form-control"  placeholder="0300-1234567"
+                                maxlength="12"
+                                inputmode="numeric"
+                                required>
+                            <div class="invalid-feedback">Please enter a contact number.</div>
+                        </div>
+
+                         <div class="col-md-6">
+                            <label>Address <span class="text-danger">*</span></label>
+                            <textarea name="address" id="address" class="form-control" rows="2" placeholder="Address" required>{{ old('address') }}</textarea>
                         </div>
 
                         <div class="col-md-6">
-                            <label>Contact Number <span class="text-danger">*</span></label>
-                            <input type="tel" name="contact_no" id="contact_no" value="{{old('contact_no')}}" class="form-control" pattern="[0-9]{10,15}" placeholder="Contact Number" required>
-                            <div class="invalid-feedback">Please enter a contact number.</div>
+                            <label>Status <span class="text-danger">*</span></label>
+
+                            <select name="status" class="form-select" required>
+                                <option value="">Select Status</option>
+                                <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>
+                                    Active
+                                </option>
+                                <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>
+                                    Inactive
+                                </option>
+                            </select>
+
+                            <div class="invalid-feedback">
+                                Please select status.
+                            </div>
                         </div>
 
                         <!-- Webcam -->
@@ -311,8 +354,10 @@
                                 <button type="button" id="startCameraBtn" class="btn btn-info btn-sm">Start Camera</button>
                                 <button type="button" id="captureBtn" class="btn btn-success btn-sm" disabled>Capture Photo</button>
                             </div>
-                            <input type="hidden" name="student_photo" id="student_photo" required>
-                            <img id="photoPreview" class="mt-2" style="display:none; max-width:100%; border:1px solid #ccc; border-radius:5px;">
+                            <input type="hidden" name="student_photo" id="student_photo" value="{{ old('student_photo') }}" required>
+                            <img id="photoPreview" class="mt-2" 
+                                src="{{ old('student_photo') }}"
+                                style="{{ old('student_photo') ? 'display:block;' : 'display:none;' }} max-width:100%; border:1px solid #ccc; border-radius:5px;">
                             <div class="invalid-feedback">Please capture student photo.</div>
                         </div>
 
@@ -338,11 +383,15 @@
                         </div>
                         <div class="col-md-6">
                             <label>Guardian NIC (Optional)</label>
-                            <input type="text" name="guardian_nic" value="{{old('guardian_nic')}}" class="form-control" placeholder="Guardian NIC">
+                            <input type="text" name="guardian_nic" id="guardian_nic" value="{{old('guardian_nic')}}" class="form-control"  placeholder="12345-1234567-1"
+                                maxlength="15"
+                                inputmode="numeric">
                         </div>
                         <div class="col-md-6">
                             <label>Contact Number (Optional)</label>
-                            <input type="tel" pattern="[0-9]{10,15}" value="{{old('guardian_contact_no')}}" name="guardian_contact_no" class="form-control" placeholder="Contact Number">
+                            <input type="tel"  id="contact_no" value="{{old('guardian_contact_no')}}" name="guardian_contact_no" class="form-control"  placeholder="0300-1234567"
+                                maxlength="12"
+                                inputmode="numeric">
                         </div>
 
                          <div class="col-md-6">
@@ -377,7 +426,7 @@
                         {{-- Session --}}
                         <div class="col-md-6">
                             <label>Session <span class="text-danger">*</span></label>
-                            <select name="academic_session_id" value="{{old('academic_session_id')}}" id="academic_session_id"  class="form-select" required>
+                            <select name="academic_session_id" value="{{old('academic_session_id')}}" id="exit_academic_session_id"  class="form-select" required>
                             <option value="">Select</option>
                                 @forelse ($sessions as $session_list)     
                                     <option value="{{$session_list->id}}"> {{$session_list->session_name}}</option>
@@ -423,74 +472,84 @@
                             <label>Admission Date (Optional)</label>
                             <input type="date" name="admission_date" value="{{old('admission_date')}}" class="form-control">
                         </div>
+                       <!-- Fee Details -->
+                        <div class="col-md-12 mt-4" id="fee-details-section" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="text-primary mb-0">Fee Details</h5>
+                                {{-- Discount Toggle --}}
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="discount" value="1" id="discount_toggle">
+                                    <label class="form-check-label fw-bold" for="discount_toggle"> Discount </label>
+                                </div>
+                            </div>
+                            {{-- Discount Input --}}
+                            <div class="row mb-3"id="discount-section" style="display: none;">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Discount Amount <span class="text-danger">*</span></label>
+                                    <input type="number" name="discount_amount" id="discount_amount" class="form-control"
+                                        step="0.01"
+                                        min="0"
+                                        value="{{ old('discount_amount', 0) }}"
+                                        placeholder="0.00" required>
+                                </div>
 
-                        <!-- Fee Details -->
-                        <div class="col-md-12 mt-4">
-                             <h5 class="text-primary mb-3">Fee Details</h5>
-                        </div>
+                                  {{-- Due Date --}}
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Due Date
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="date" name="discount_due_date" value="{{ old('due_date') }}" class="form-control" required>
+                                    @error('discount_due_date')
+                                        <div class="text-danger mt-1">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
 
-                        <div class="col-md-4">
-                            <label>Admission Fee</label>
-                            <input type="number" name="admission_fee" value="{{old('admission_fee')}}" step="0.01" class="form-control" placeholder="0.00">
-                        </div>
+                                {{-- Notes --}}
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">
+                                        Notes
+                                    </label>
 
-                        <div class="col-md-4">
-                            <label>Tuition Fee (Monthly)</label>
-                            <input type="number" name="tuition_fee" value="{{old('tuition_fee')}}" step="0.01" class="form-control" placeholder="0.00">
-                        </div>
-
-                        <div class="col-md-4">
-                            <label>Stationary Fee</label>
-                            <input type="number" name="stationary_fee" value="{{old('sationary_fee')}}" step="0.01" class="form-control" placeholder="0.00">
-                        </div>
-
-                        <div class="col-md-4">
-                            <label>Library Fee</label>
-                            <input type="number" name="library_fee" value="{{old('library_fee')}}" step="0.01" class="form-control" placeholder="0.00">
-                        </div>
-
-                        <div class="col-md-4">
-                            <label>Sports Fund</label>
-                            <input type="number" name="sports_fund" value="{{old('sports_fund')}}" step="0.01" class="form-control" placeholder="0.00">
-                        </div>
-
-                        <div class="col-md-4">
-                            <label>Security Deposit</label>
-                            <input type="number" name="security_deposit" value="{{old('security_deposit')}}" step="0.01" class="form-control" placeholder="0.00">
-                        </div>
-
-                        <div class="col-md-4">
-                            <label>Development Fund</label>
-                            <input type="number" name="development_fund" value="{{old('development_fund')}}" step="0.01" class="form-control" placeholder="0.00">
-                        </div>
-
-                        <div class="col-md-4">
-                            <label>Misc. Charges</label>
-                            <input type="number" name="misc_charges" value="{{old('misc_charges')}}" step="0.01" class="form-control" placeholder="0.00">
-                        </div>
-
-                        <div class="col-md-6">
-                            <label>Total Amount Paid (at admission)</label>
-                            <input type="number" name="total_fee_paid" value="{{old('total_fee_paid')}}" step="0.01" class="form-control" placeholder="0.00">
-                        </div>
-
-                        <div class="col-md-3">
-                            <label>Receipt No</label>
-                            <input type="text" name="receipt_no" value="{{old('receipt_no')}}" class="form-control">
-                        </div>
-
-                        <div class="col-md-3">
-                            <label>Fee Paid Date</label>
-                            <input type="date" name="fee_paid_date" value="{{old('fee_paid_date')}}" class="form-control">
+                                    <textarea name="discount_notes" 
+                                            rows="3"
+                                            class="form-control">{{ old('notes') }}</textarea>
+                                    @error('discount_notes')
+                                        <div class="text-danger mt-1">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
+                            {{-- Voucher Fee Details --}}
+                            <div class="row" id="fee-details-container">
+                                {{-- Voucher items AJAX --}}
+                            </div>
+                            <div class="row mt-3">
+                                {{-- Total Amount --}}
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Total Amount </label>
+                                    <input type="number" name="total_amount" id="total_amount" class="form-control" value="" readonly>
+                                </div>
+                                {{-- Receipt number --}}
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Receipt (Optional)</label>
+                                    <input type="text" name="receipt_no"  class="form-control" value="{{old('receipt_no')}}">
+                                </div>
+                                {{-- Fee Paid Date --}}
+                                <div class="col-md-4">
+                                    <label>Fee Paid Date (Optional)</label>
+                                    <input type="date" name="fee_paid_date" value="{{ old('fee_paid_date') }}" class="form-control">
+                                </div>
+                            </div>
                         </div>
                     </div>
-
                     <div class="mt-4 d-flex justify-content-between">
                         <button type="button" class="btn btn-primary prev-step">← Previous</button>
                         <button type="submit" class="btn btn-success">Submit</button>
                     </div>
                 </div>
-
             </div>
         </form>
     </div>
@@ -500,147 +559,562 @@
 @section('scripts')
 
 <script>
-    document.addEventListener('DOMContentLoaded', function(){
+    document.addEventListener('DOMContentLoaded', function () {
+
         const steps = Array.from(document.querySelectorAll('.tab-pane'));
         const progressSteps = Array.from(document.querySelectorAll('.step-progress .step'));
         const nextButtons = document.querySelectorAll('.next-step');
         const prevButtons = document.querySelectorAll('.prev-step');
+
         let currentStep = 0;
+
+        // ==========================================================
         // Webcam
+        // ==========================================================
+
         const video = document.getElementById('webcam');
         const canvas = document.getElementById('canvas');
         const startCameraBtn = document.getElementById('startCameraBtn');
         const captureBtn = document.getElementById('captureBtn');
         const photoInput = document.getElementById('student_photo');
         const photoPreview = document.getElementById('photoPreview');
+
         let stream = null;
 
-        startCameraBtn.addEventListener('click', async () => {
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                video.srcObject = stream;
-                video.style.display = 'block';
-                captureBtn.disabled = false;
-                startCameraBtn.disabled = true;
-            } catch(err) { alert('Webcam not accessible: ' + err); }
-        });
+        if (photoInput.value) {
+            photoInput.classList.remove('is-invalid');
+            photoInput.classList.add('is-valid');
+        }
 
-        captureBtn.addEventListener('click', ()=>{
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video,0,0);
-            const dataURL = canvas.toDataURL('image/png');
-            photoInput.value = dataURL;
-            photoPreview.src = dataURL;
-            photoPreview.style.display = 'block';
-            if(stream){ stream.getTracks().forEach(track => track.stop()); video.style.display='none'; captureBtn.disabled=true; }
-        });
-
-        function showStep(i){
-            steps.forEach((s, idx)=>{ s.classList.remove('show','active'); if(idx===i) s.classList.add('show','active'); });
-            prevButtons.forEach(btn => btn.style.display = (i===0)?'none':'inline-block');
-            progressSteps.forEach((step, idx)=>{
-                step.classList.remove('active','completed');
-                if(idx<i) step.classList.add('completed');
-                if(idx===i) step.classList.add('active');
+        if (startCameraBtn) {
+            startCameraBtn.addEventListener('click', async () => {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    video.srcObject = stream;
+                    video.style.display = 'block';
+                    captureBtn.disabled = false;
+                    startCameraBtn.disabled = true;
+                } catch (err) {
+                    alert('Webcam not accessible: ' + err);
+                }
             });
         }
 
-        function validateStep(step){
-            let valid = true;
-            step.querySelectorAll('input[required], select[required]').forEach(field=>{
-                if(!field.value.trim()){ valid=false; field.classList.add('is-invalid'); } 
-                else field.classList.remove('is-invalid');
+        if (captureBtn) {
+            captureBtn.addEventListener('click', () => {
+                const maxWidth = 800;
+                const maxHeight = 800;
+                const quality = 0.7;
+
+                let width = video.videoWidth;
+                let height = video.videoHeight;
+
+                const ratio = Math.min(maxWidth / width, maxHeight / height, 1);
+
+                width = Math.round(width * ratio);
+                height = Math.round(height * ratio);
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, width, height);
+
+                const dataURL = canvas.toDataURL('image/jpeg', quality);
+
+                photoInput.value = dataURL;
+                photoPreview.src = dataURL;
+                photoPreview.style.display = 'block';
+
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                    video.style.display = 'none';
+                    captureBtn.disabled = true;
+                }
+
+                photoInput.classList.remove('is-invalid');
+                photoInput.classList.add('is-valid');
             });
+        }
+
+
+        // ==========================================================
+        // Show Step
+        // ==========================================================
+
+        function showStep(i) {
+
+            steps.forEach((step, index) => {
+
+                step.classList.remove('show', 'active');
+
+                if (index === i) {
+                    step.classList.add('show', 'active');
+                }
+            });
+
+            prevButtons.forEach(button => {
+
+                button.style.display =
+                    i === 0 ? 'none' : 'inline-block';
+            });
+
+            progressSteps.forEach((step, index) => {
+
+                step.classList.remove('active', 'completed');
+
+                if (index < i) {
+                    step.classList.add('completed');
+                }
+
+                if (index === i) {
+                    step.classList.add('active');
+                }
+            });
+        }
+
+
+        // ==========================================================
+        // Pattern Configuration
+        // ==========================================================
+
+        const patterns = {
+
+            father_nic: /^\d{5}-\d{7}-\d$/,
+
+            b_form_no: /^\d{5}-\d{7}-\d$/,
+
+            guardian_nic: /^\d{5}-\d{7}-\d$/,
+
+            contact_no: /^03\d{2}-\d{7}$/,
+
+            guardian_contact_no: /^03\d{2}-\d{7}$/
+        };
+
+
+        // ==========================================================
+        // Auto Format NIC / B-Form
+        // 12345-1234567-1
+        // ==========================================================
+
+        function formatNic(input) {
+
+            let value = input.value.replace(/\D/g, '');
+
+            // Maximum 13 digits
+            value = value.substring(0, 13);
+
+            if (value.length > 12) {
+
+                value =
+                    value.substring(0, 5) +
+                    '-' +
+                    value.substring(5, 12) +
+                    '-' +
+                    value.substring(12);
+
+            } else if (value.length > 5) {
+
+                value =
+                    value.substring(0, 5) +
+                    '-' +
+                    value.substring(5);
+            }
+
+            input.value = value;
+        }
+
+
+        // ==========================================================
+        // Auto Format Contact
+        // 0300-1234567
+        // ==========================================================
+
+        function formatContact(input) {
+
+            let value = input.value.replace(/\D/g, '');
+
+            // Maximum 11 digits
+            value = value.substring(0, 11);
+
+            if (value.length > 4) {
+
+                value =
+                    value.substring(0, 4) +
+                    '-' +
+                    value.substring(4);
+            }
+
+            input.value = value;
+        }
+
+
+        // ==========================================================
+        // NIC / B-Form / Contact Input Handling
+        // ==========================================================
+
+        Object.keys(patterns).forEach(name => {
+
+            const input = document.querySelector(`[name="${name}"]`);
+
+            if (!input) {
+                return;
+            }
+
+            input.addEventListener('input', function () {
+
+                if (
+                    name === 'father_nic' ||
+                    name === 'b_form_no' ||
+                    name === 'guardian_nic'
+                ) {
+
+                    formatNic(this);
+
+                } else if (
+                    name === 'contact_no' ||
+                    name === 'guardian_contact_no'
+                ) {
+
+                    formatContact(this);
+                }
+
+                // Remove invalid state while typing
+                this.classList.remove('is-invalid');
+            });
+
+
+            input.addEventListener('blur', function () {
+
+                const value = this.value.trim();
+
+                // Optional field
+                if (
+                    !this.hasAttribute('required') &&
+                    value === ''
+                ) {
+
+                    this.classList.remove(
+                        'is-invalid',
+                        'is-valid'
+                    );
+
+                    return;
+                }
+
+                if (patterns[name].test(value)) {
+
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+
+                } else {
+
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                }
+            });
+        });
+
+
+        // ==========================================================
+        // Step Validation
+        // ==========================================================
+
+        function validateStep(step) {
+
+            let valid = true;
+
+            const fields = step.querySelectorAll(
+                'input, select, textarea'
+            );
+
+            fields.forEach(field => {
+
+                const value = field.value.trim();
+
+                // ------------------------------------------
+                // Required Validation
+                // ------------------------------------------
+
+                if (
+                    field.hasAttribute('required') &&
+                    value === ''
+                ) {
+
+                    valid = false;
+
+                    field.classList.add('is-invalid');
+                    field.classList.remove('is-valid');
+
+                    return;
+                }
+
+
+                // ------------------------------------------
+                // Optional Empty Field
+                // ------------------------------------------
+
+                if (value === '') {
+
+                    field.classList.remove(
+                        'is-invalid',
+                        'is-valid'
+                    );
+
+                    return;
+                }
+
+
+                // ------------------------------------------
+                // Pattern Validation
+                // ------------------------------------------
+
+                const fieldName = field.getAttribute('name');
+
+                if (
+                    fieldName &&
+                    patterns[fieldName]
+                ) {
+
+                    if (!patterns[fieldName].test(value)) {
+
+                        valid = false;
+
+                        field.classList.add('is-invalid');
+                        field.classList.remove('is-valid');
+
+                        return;
+                    }
+                }
+
+
+                // ------------------------------------------
+                // HTML Pattern Validation
+                // ------------------------------------------
+
+                if (field.hasAttribute('pattern')) {
+
+                    const pattern = new RegExp(
+                        '^(?:' +
+                        field.getAttribute('pattern') +
+                        ')$'
+                    );
+
+                    if (!pattern.test(value)) {
+
+                        valid = false;
+
+                        field.classList.add('is-invalid');
+                        field.classList.remove('is-valid');
+
+                        return;
+                    }
+                }
+
+
+                // ------------------------------------------
+                // Valid
+                // ------------------------------------------
+
+                field.classList.remove('is-invalid');
+                field.classList.add('is-valid');
+            });
+
+
             return valid;
         }
 
-        nextButtons.forEach(btn=>{
-            btn.addEventListener('click', ()=>{
+
+        // ==========================================================
+        // Next Button
+        // ==========================================================
+
+        nextButtons.forEach(button => {
+
+            button.addEventListener('click', () => {
+
                 const step = steps[currentStep];
-                if(validateStep(step)){
-                    currentStep = Math.min(currentStep+1, steps.length-1);
+
+                if (validateStep(step)) {
+
+                    currentStep = Math.min(
+                        currentStep + 1,
+                        steps.length - 1
+                    );
+
                     showStep(currentStep);
-                }
-            });
-        });
 
-        prevButtons.forEach(btn=>{
-            btn.addEventListener('click', ()=>{
-                currentStep = Math.max(currentStep-1,0);
-                showStep(currentStep);
-            });
-        });
+                } else {
 
-        showStep(currentStep);
+                    const firstInvalid =
+                        step.querySelector('.is-invalid');
 
-        // Password Generate four digits
-       function generatePassword(length = 4) {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            let password = '';
-            for (let i = 0; i < length; i++) {
-                password += chars[Math.floor(Math.random() * chars.length)];
-            }
-            return password;
-        }
-            const passwordField = document.getElementById('password');
-            passwordField.value = generatePassword(4);
-    });
-    // Session Loads 
-    $('#academic_session_id').on('change', function() {
-        let academic_session_id = $(this).val();
-        let token = $('meta[name="csrf-token"]').attr('content');
-        const route_url = "{{ route('admin.admission.class.section') }}";
-        if(academic_session_id){
-            loadSessionItems(route_url, token , academic_session_id);
-        }
-    });
-</script>
-<script src="{{asset('backend_assets/js/academic-session.js')}}"></script>
-<script>
-    let searchTimeout;
-    new TomSelect('#select-portal', {
-        valueField: 'id',
-        labelField: 'text',
-        searchField: 'text',
-        create: true,
-        //  AJAX Search with Debounce
-        load: function(query, callback) {
-            if (!query.length) return callback();
-            searchTimeout = setTimeout(function() {
-                $.ajax({
-                    url: "{{ route('admin.search-portal') }}?q=" + query,
-                    type: 'GET',
-                    success: function(res) { callback(res); },
-                    error: function() { callback(); }
-                });
-            }, 500); // 500ms delay after user stops typing
-        },
+                    if (firstInvalid) {
 
-        // Auto-fill on select
-        onChange: function(value) {
-            if (!value) return;
-            $.ajax({
-                url: "{{ route('admin.parent-portal-info', '') }}/" + value,
-                type: 'GET',
-                success: function(data) {
-                    if (data.statuscode === 200) {
-                    // password empty if exit parent select
-                    const passwordField = document.getElementById('password');
-                     passwordField.value = "";
-                     // remove required attr
-                        $('#password').removeAttr('required');
-                        $('#father_name').val(data.father_name);
-                        $('#father_nic').val(data.father_nic);
-                        $('#mother_name').val(data.mother_name);
-                        $('#occupation').val(data.occupation);
-                        $('#income').val(data.income);
-                        $('#address').val(data.address);
-                        $('#contact_no').val(data.contact_no);
+                        firstInvalid.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+
+                        firstInvalid.focus();
                     }
                 }
             });
+        });
+
+
+        // ==========================================================
+        // Previous Button
+        // ==========================================================
+
+        prevButtons.forEach(button => {
+
+            button.addEventListener('click', () => {
+
+                currentStep = Math.max(
+                    currentStep - 1,
+                    0
+                );
+
+                showStep(currentStep);
+            });
+        });
+        // ==========================================================
+        // Initial Step
+        // ==========================================================
+        showStep(currentStep);
+    });
+    // Password Generate
+    function generatePassword(length = 4) {
+        const chars ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let password = '';
+        for (let i = 0; i < length; i++) {
+            password += chars[
+                Math.floor(
+                    Math.random() * chars.length
+                )
+            ];
         }
+        return password;
+    }
+    const passwordField =document.getElementById('password');
+    if (passwordField && !passwordField.value) {
+
+        passwordField.value =
+            generatePassword(4);
+    }
+</script>
+<script>
+    // Input fields client side valdation check NIC and B Form number
+    document.querySelectorAll('#father_nic, #b_form_no, #guardian_nic, #contact_no, #guardian_contact_no').forEach(input => {
+        input.addEventListener('input', function () {
+            // Sirf numbers rakhein
+            let value = this.value.replace(/\D/g, '');
+            // Maximum 13 digits
+            value = value.substring(0, 13);
+            // Format: 12345-1234567-1
+            if (value.length > 5) {
+                value = value.substring(0, 5) + '-' + value.substring(5);
+            }
+            if (value.length > 13) {
+                value = value.substring(0, 13) + '-' + value.substring(13);
+            }
+            this.value = value;
+        });
+
+        input.addEventListener('blur', function () {
+            const pattern = /^\d{5}-\d{7}-\d$/;
+            if (this.value === '') {
+                this.classList.remove('is-valid', 'is-invalid');
+            } else if (pattern.test(this.value)) {
+                this.classList.add('is-valid');
+                this.classList.remove('is-invalid');
+            } else {
+                this.classList.add('is-invalid');
+                this.classList.remove('is-valid');
+            }
+        });
+
+    });
+    // Auto Fill if Parent records exits
+    let parentSearchTimeout;
+    function searchParentByNic() {
+        const fatherNic = $('#father_nic').val().trim();
+        // Sirf complete NIC par search
+        const nicPattern = /^\d{5}-\d{7}-\d$/;
+
+        if (!nicPattern.test(fatherNic)) {
+            return;
+        }
+        $.ajax({
+            url: "{{ route('admin.search-parant') }}",
+            type: "GET",
+            data: {
+                q: fatherNic
+            },
+            success: function (data) {
+                const passwordField = document.getElementById('password');
+                if (data.statuscode === 200) {
+                    // Existing Parent
+                    $('#father_name').val(data.father_name);
+                    $('#mother_name').val(data.mother_name);
+                    $('#occupation').val(data.occupation);
+                    $('#income').val(data.income);
+                    $('#address').val(data.address);
+                    $('#contact_no').val(data.contact_no)
+                    // Existing parent => password required nahi
+                    if (passwordField) {
+                        passwordField.value = '';
+                        passwordField.removeAttribute('required');
+                    }
+                } else {
+                    // New Parent
+                    $('#father_name').val('');
+                    $('#mother_name').val('');
+                    $('#occupation').val('');
+                    $('#income').val('');
+                    $('#address').val('');
+                    $('#contact_no').val('');
+
+                    // New parent => password generate
+                    if (passwordField) {
+                        passwordField.value = generatePassword(4);
+                        passwordField.setAttribute('required', 'required');
+                    }
+                }
+            },
+            error: function (xhr) {
+                console.log('Parent search error:', xhr);
+            }
+        });
+    }
+    // NIC Input / Paste - Debounce Search
+    $('#father_nic').on('input', function () {
+        // Previous timeout cancel
+        clearTimeout(parentSearchTimeout);
+        const value = $(this).val().trim();
+        // Complete NIC nahi hai to request nahi
+        const nicPattern = /^\d{5}-\d{7}-\d$/;
+        if (!nicPattern.test(value)) {
+            return;
+        }
+        // User typing/paste ke baad 800ms wait
+        parentSearchTimeout = setTimeout(function () {
+            searchParentByNic();
+        }, 800);
     });
 </script>
+
+<script>
+    window.classSectionUrl = "{{ route('admin.admission.class.section') }}";
+    window.voucherAmountsUrl = "{{ route('admin.admission.amounts') }}";
+    window.selectedAcademicSessionId = "";
+    window.selectedSessionItemId = "";
+    // Add page par discount OFF
+    window.isDiscountEnabled = 0;
+    window.discountAmount = 0;
+</script>
+
+<script src="{{ asset('backend_assets/js/academic-session.js') }}"></script>
+<script src="{{ asset('backend_assets/js/voucher.js') }}"></script>
 @endsection

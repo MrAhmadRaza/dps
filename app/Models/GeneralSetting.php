@@ -8,6 +8,8 @@ class GeneralSetting extends Model
 {
     protected $fillable = [
        'name',
-       'acount_no',
+       'account_no',
+       'one_bill_prefix',
+       'late_fee_fine',
     ];
 }

@@ -23,11 +23,7 @@ use App\Http\Controllers\Backend\Admin\Parant\ChallanPaymentController;
 
 // Public Route Acccess
 Route::get('/', function () {
-   $academicSession = App\Models\AcademicSession::where('status', '=' , 'active')->latest()->count();
-   $admissions      = App\Models\Student::latest()->count();
-   $parents         = App\Models\Parant::latest()->count();
-   $challans        = App\Models\FeeChallan::latest()->count();
-    return view('frontend.home.index',compact('academicSession','admissions','parents','challans'));
+    return view('frontend.home.index');
 })->name('/');  
 
 // Admin Routes
@@ -51,10 +47,12 @@ Route::prefix('admin')->as('admin.')->group(function(){
             Route::get('/admission/view/{id}','viewAdmission')->name('view.admission');
             Route::get('/admission/print/{id}', 'print')->name('print.admission');
             Route::get('/admission/voucher/{id}', 'printVoucher')->name('voucher.admission');
+            Route::get('/admission/{studentId}/challans', 'studentChallans')->name('admission.challans');
+            Route::get('/admission/{studentId}/challan.print', 'challanPrint')->name('challan.print');
             Route::get('/admission/add-admission', 'addAdmission')->name('add.admission');
-            Route::get('/search-portals','searchPortal')->name('search-portal');
-            Route::get('/parent-portal-info/{id}','getInfo')->name('parent-portal-info');
-            Route::post('/admission/class-section','getClassSection')->name('admission.class.section');
+            Route::get('/search-parant','searchParant')->name('search-parant');
+            Route::post('/admission/class-section','exitClassSection')->name('admission.class.section');
+            Route::post('/admission/amounts','getVoucherAmounts')->name('admission.amounts');
             Route::post('/admission', 'submitAdmission')->name('admission.submit');
             Route::get('/admission/edit-admission/{id}', 'editAdmission')->name('edit.admission');
             Route::post('/admission/update-admission/{id}', 'updateAdmission')->name('update.admission');
@@ -65,7 +63,7 @@ Route::prefix('admin')->as('admin.')->group(function(){
         Route::controller(AcademicSessionController ::class)->group(function(){
             Route::get('/academic-session', 'index')->name('academic-session.index');
             Route::get('/academic-session/view/{id}', 'viewAcademicSession')->name('academic-session.view.index');
-            Route::get('/academic-session/add', 'addAcademicSession')->name('academic-session.add');
+            Route::get('/academic-session/add-academic-session', 'addAcademicSession')->name('academic-session.add');
             Route::get('/academic-session/class-section/{id?}', 'classSection')->name('academic-session.class-section');
             Route::post('/academic-session/store', 'storeAcademicSession')->name('academic-session.store');
             Route::post('/academic-session-item/store', 'storeAcademicSessionItem')->name('academic-session-item.store');
@@ -81,7 +79,9 @@ Route::prefix('admin')->as('admin.')->group(function(){
             Route::get('/voucher', 'index')->name('voucher.index');
             Route::get('/voucher/view/{id}', 'viewVoucher')->name('voucher.view');
             Route::get('/voucher/print/{id}', 'printVoucher')->name('voucher.print');
-            Route::get('/voucher/add', 'addVoucher')->name('voucher.add');
+            Route::get('/voucher/add-voucher', 'addVoucher')->name('voucher.add');
+            Route::post('/voucher/class-section','exitClassSection')->name('voucher.class.section');
+            Route::post('/voucher/amounts','getVoucherAmounts')->name('voucher.amounts');
             Route::post('/voucher/store', 'storeVoucher')->name('voucher.store');
             Route::get('/voucher/edit/{id}', 'editVoucher')->name('voucher.edit');
             Route::post('/voucher/update/{id}', 'updateVoucher')->name('voucher.update');
@@ -92,6 +92,7 @@ Route::prefix('admin')->as('admin.')->group(function(){
         Route::controller(ChallanController ::class)->group(function(){
             Route::get('/parent/challans', 'index')->name('challan.index');
             Route::get('/parent', 'showParent')->name('parent.show');
+            Route::post('/parent/custom/generate','customGenerate')->name('challan.custom.generate');
             Route::get('/parent/password/{id}', 'setPassword')->name('parent.password');
             Route::get('/parent/challans/view/{id}','viewChallan')->name('challan.view');
             Route::get('/parent/challans/approved-chalan/{id}','approvedChallan')->name('challan.approved');
