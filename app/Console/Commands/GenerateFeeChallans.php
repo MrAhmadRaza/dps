@@ -70,7 +70,6 @@ class GenerateFeeChallans extends Command
                         'total_amount'          => $discountAmount,
                         'amount_after_due_date' => $discountAmount + $lateFee,
                         'note'                  => $student->discount_notes,
-                        'challan_no'            => FeeChallanHelper::generateChallanNo(),
                     ]);
 
                     DB::commit();
@@ -129,7 +128,6 @@ class GenerateFeeChallans extends Command
                     'total_amount'          => $calculatedTotal,
                     'amount_after_due_date' => $calculatedTotal + $lateFee,
                     'note'                  => $voucher->notes,
-                    'challan_no'            => FeeChallanHelper::generateChallanNo(),
                 ]);
 
                 foreach ($itemsToInsert as $itemData) {

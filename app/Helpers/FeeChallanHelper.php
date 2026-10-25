@@ -12,15 +12,8 @@ use Illuminate\Support\Facades\DB;
 class FeeChallanHelper
 {
 
-    // Challan Ni Generate
-    public static function generateChallanNo(): string
-    {
-        do {
-            $challanNo = (string) random_int(100, 9999);
-        } while (FeeChallan::where('challan_no', $challanNo)->exists());
-
-        return $challanNo;
-    }
+    // Challan No: assigned automatically by the FeeChallan model after insert
+    // (fixed-length sequential, see FeeChallan::formatChallanNo()).
 
     // Custom hallan Generate
     public static function createCustomChallan($student, string $startMonthStr, string $endMonthStr): ?FeeChallan
@@ -60,7 +53,6 @@ class FeeChallanHelper
                     'total_amount'          => $accumulatedTotal,
                     'amount_after_due_date' => $accumulatedTotal + $lateFee,
                     'note'                  => $student->discount_notes,
-                    'challan_no'            => self::generateChallanNo(),
                 ]);
 
                 if ($accumulatedTotal > 0) {
@@ -160,7 +152,6 @@ class FeeChallanHelper
                 'total_amount'          => $accumulatedTotal,
                 'amount_after_due_date' => $accumulatedTotal + $lateFee,
                 'note'                  => $lastChallan->note,
-                'challan_no'            => self::generateChallanNo(),
             ]);
 
             foreach ($itemsToInsert as $itemData) {
@@ -223,7 +214,6 @@ class FeeChallanHelper
                     'total_amount'          => $discountAmount,
                     'amount_after_due_date' => $discountAmount + $lateFee,
                     'note'                  => $student->discount_notes,
-                    'challan_no'            => self::generateChallanNo(),
                 ]);
 
                 // NOTE: FeeChallanItem::create() HAS BEEN REMOVED HERE STRICTLY!
@@ -288,7 +278,6 @@ class FeeChallanHelper
                 'total_amount'          => $calculatedTotal,
                 'amount_after_due_date' => $calculatedTotal + $lateFee,
                 'note'                  => $voucher->notes,
-                'challan_no'            => self::generateChallanNo(),
             ]);
 
             // Insert Snapshot Items into fee_challan_items for normal students only

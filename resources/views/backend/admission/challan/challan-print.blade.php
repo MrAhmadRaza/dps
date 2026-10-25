@@ -28,12 +28,10 @@
         /* Amounts & Due Dates */
         $total         = (float) ($challan->total_amount ?? 0);
         $duesAfterDate = (float) ($challan->amount_after_due_date ?? ($total > 0 ? $total + 200 : 0));
-        $dueDate       = $isDiscount ? ($discountDueDate ?? $challan->due_date) : $challan->due_date;
+        $dueDate       = $challan->due_date; // must match what 1LINK inquiry returns
 
-        /* 1Bill ID Prefix */
-        $oneBillPrefix = $generalSetting->one_bill_prefix ?? '';
-        $challanNo     = $challan->challan_no ?? '';
-        $oneBillId     = $oneBillPrefix . $challanNo;
+        /* 1Bill ID (1LINK consumer number) */
+        $oneBillId     = $challan->consumer_number;
 
         /* Payment Instructions */
         $paymentInstructions = config('fees.payment_instructions', config('challan.payment_instructions', []));

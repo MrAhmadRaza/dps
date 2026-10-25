@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend\Admin\Parant;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use App\Models\ChallanPayment;
 use App\Models\FeeChallan;
@@ -21,6 +22,9 @@ class ChallanPaymentController extends Controller
                 'voucher_image'    => 'required|image|mimes:jpg,jpeg,png|max:2048',
             ]);
             $challanPayment = ChallanPayment::where('fee_challan_id', $request->fee_challan_id)->first();
+            if ($challanPayment && $challanPayment->source === ChallanPayment::SOURCE_ONELINK) {
+                return back()->with('error', 'This challan has already been paid through 1LINK.');
+            }
             $imagePath = null;
             // ========== Image Upload ==========
             if ($request->hasFile('voucher_image')) {
