@@ -99,6 +99,25 @@
                         </tr>
 
                         <tr>
+                            <th>1Bill ID</th>
+                            <td>{{ $challan->consumer_number }}</td>
+                        </tr>
+
+                        @if($challan->payment?->source === 'onelink')
+                        <tr>
+                            <th>Amount Paid</th>
+                            <td>{{ number_format((float) $challan->payment->amount, 2) }}</td>
+                        </tr>
+                        <tr>
+                            <th>Paid At (1LINK)</th>
+                            <td>
+                                {{ $challan->payment->paid_at?->timezone(config('onelink.timezone'))->format('d M Y, h:i A') ?? 'N/A' }}
+                                <span class="text-muted small">· Channel {{ $challan->payment->channel ?? '-' }}</span>
+                            </td>
+                        </tr>
+                        @endif
+
+                        <tr>
                             <th>Status</th>
                             <td>
                                 @if($challan->status == 'pending')
@@ -107,6 +126,9 @@
                                     <span class="badge bg-info text-dark px-3 py-2">Review</span>
                                 @elseif($challan->status == 'approved' || $challan->status == 'paid')
                                     <span class="badge bg-success px-3 py-2">Approved</span>
+                                    @if($challan->payment?->source === 'onelink')
+                                        <span class="badge bg-primary px-3 py-2 ms-1">Paid via 1LINK</span>
+                                    @endif
                                 @else
                                     <span class="badge bg-secondary px-3 py-2">{{ ucfirst($challan->status ?? 'Unknown') }}</span>
                                 @endif

@@ -175,7 +175,9 @@ class ChallanController extends Controller
                         case 'review':
                             return '<span class="badge bg-info">Review</span>';
                         case 'approved':
-                            return '<span class="badge bg-success">Approved</span>';
+                            return $row->payment?->source === 'onelink'
+                                ? '<span class="badge bg-success">Approved</span> <span class="badge bg-primary">1LINK</span>'
+                                : '<span class="badge bg-success">Approved</span>';
                         default:
                             return '<span class="badge bg-secondary">N/A</span>';
                     }
@@ -194,9 +196,10 @@ class ChallanController extends Controller
                     $pendingRoute = route('admin.challan.pending', $row->id);
                     $deleteRoute = route('admin.challan.destroy', $row->id);
                     $status = $row->status;
+                    $paidViaOneLink = $row->payment?->source === 'onelink';
 
                     return view('backend.partials.challan-action', compact(
-                        'viewRoute', 'status', 'approvedRoute', 'pendingRoute', 'deleteRoute'
+                        'viewRoute', 'status', 'approvedRoute', 'pendingRoute', 'deleteRoute', 'paidViaOneLink'
                     ))->render();
                 })
 
@@ -277,7 +280,10 @@ class ChallanController extends Controller
     public function pendingChallan(int $id): RedirectResponse
     {
         try{
-            $challan =  FeeChallan::findOrFail($id);
+            $challan =  FeeChallan::with('payment')->findOrFail($id);
+            if ($challan->isPaidViaOneLink()) {
+                return back()->with('error', 'This challan was paid through 1LINK and cannot be set back to Pending.');
+            }
             $challan->update(['status' => 'pending']);
             return redirect()->back()->with('success','Challan Pending Successfully');
         }catch (\Exception $e) {
@@ -308,7 +314,10 @@ class ChallanController extends Controller
     public function destroyChallan(int $id): RedirectResponse
     {
         try{
-            $challan =  FeeChallan::findOrFail($id);
+            $challan =  FeeChallan::with('payment')->findOrFail($id);
+            if ($challan->isPaidViaOneLink()) {
+                return back()->with('error', 'This challan was paid through 1LINK and cannot be deleted.');
+            }
             $challan->delete();
             return redirect()->back()->with('success','Challan Delete Successfully');
         }catch (\Exception $e) {

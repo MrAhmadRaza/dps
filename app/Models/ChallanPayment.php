@@ -10,6 +10,9 @@ class ChallanPayment extends Model
 {
     use SoftDeletes;
 
+    public const SOURCE_MANUAL  = 'manual';
+    public const SOURCE_ONELINK = 'onelink';
+
     protected $fillable = [
         'fee_challan_id',
         'bank_name',
@@ -17,10 +20,18 @@ class ChallanPayment extends Model
         'transaction_id',
         'voucher_image',
         'status',
+        'source',
+        'tran_auth_id',
+        'amount',
+        'channel',
+        'bank_mnemonic',
+        'paid_at',
     ];
 
     protected $casts = [
         'paid_date' => 'date',
+        'paid_at'   => 'datetime',
+        'amount'    => 'decimal:2',
     ];
 
     public function challan()

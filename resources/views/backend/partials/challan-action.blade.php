@@ -13,7 +13,9 @@
 
     @if($status === 'review' || $status === 'approved')
       <!-- Status Badge -->
-      @if($status === 'approved')
+      @if($status === 'approved' && !empty($paidViaOneLink))
+        {{-- Paid through 1LINK: cannot be reverted to Pending --}}
+      @elseif($status === 'approved')
         <!-- View Button -->  
     
       <a href="{{ $pendingRoute ?? '#!' }}"
@@ -38,6 +40,7 @@
     @endif
 
     <!-- Dropdown for Delete -->
+   @if(empty($paidViaOneLink))
    <form action="{{ $deleteRoute ?? '#!' }}" method="POST" class="d-inline">
         @csrf @method('DELETE')
         <button type="submit"
@@ -50,4 +53,5 @@
             <i class="fa fa-trash"></i>
         </button>
     </form>
+   @endif
 </div>
