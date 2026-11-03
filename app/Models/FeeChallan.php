@@ -10,6 +10,8 @@ class FeeChallan extends Model
 {
     use SoftDeletes;
 
+    public const STATUS_EXPIRED = 'expired';
+
     protected $fillable = [
         'student_id', 'month','challan_no','include_admission_fee', 'status','issue_date',
         'due_date', 'total_amount' , 'amount_after_due_date' , 'note'

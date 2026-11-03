@@ -3,35 +3,21 @@
 namespace App\Support;
 
 /**
- * Formats / parses amounts for the 1LINK API.
+ * Amounts for the 1LINK API.
  *
- * plain  : "27500" or "27500.50"  (BOP sample document)
- * padded : "+0000002750000"       (standard 1LINK: sign + 13 digits, last two digits are paisa)
+ * BOP: amounts are JSON numbers with whole-rupee integer values, e.g. 27500.
+ * Incoming transaction_amount is also accepted as a numeric string ("27500")
+ * or in the legacy 1LINK padded format ("+0000002750000", last two digits paisa).
  */
 class OneLinkAmount
 {
-    public static function format(float $amount): string
+    public static function format(float $amount): int
     {
-        $amount = round($amount, 2);
-
-        if (config('onelink.amount_format') === 'padded') {
-            return '+' . str_pad((string) (int) round($amount * 100), 13, '0', STR_PAD_LEFT);
-        }
-
-        return self::plain($amount);
-    }
-
-    public static function plain(float $amount): string
-    {
-        $amount = round($amount, 2);
-
-        return fmod($amount, 1.0) == 0.0
-            ? number_format($amount, 0, '.', '')
-            : number_format($amount, 2, '.', '');
+        return (int) round($amount, 0, PHP_ROUND_HALF_UP);
     }
 
     /**
-     * Accepts either format. Returns null when the value is not a valid amount.
+     * Returns null when the value is not a valid amount.
      */
     public static function parse(mixed $value): ?float
     {

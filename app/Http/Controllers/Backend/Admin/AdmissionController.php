@@ -368,13 +368,14 @@ class AdmissionController extends Controller
                         'pending'  => '<span class="badge bg-warning text-dark">Pending</span>',
                         'review'   => '<span class="badge bg-info">Review</span>',
                         'approved', 'paid' => '<span class="badge bg-success">Paid</span>',
+                        'expired'  => '<span class="badge bg-secondary">Expired</span>',
                         default    => '<span class="badge bg-secondary">N/A</span>',
                     };
                 })
                 ->filterColumn('status', function ($query, $keyword) {
                     $keyword = strtolower(trim($keyword));
 
-                    if (in_array($keyword, ['pending', 'review', 'approved', 'paid'])) {
+                    if (in_array($keyword, ['pending', 'review', 'approved', 'paid', 'expired'])) {
                         $query->where('status', $keyword);
                     }
                 })

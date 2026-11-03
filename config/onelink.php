@@ -13,7 +13,7 @@
 
 return [
 
-    // Master switch. When false, every request returns response code 05.
+    // Master switch. When false, every request returns response code 08.
     'enabled' => (bool) env('ONELINK_ENABLED', false),
 
     // Bearer token BOP sends in the Authorization header.
@@ -27,16 +27,9 @@ return [
     // Returned in responses. Institute code is assigned by BOP / 1LINK.
     'institute_code' => env('ONELINK_INSTITUTE_CODE', ''),
     'institute_name' => env('ONELINK_INSTITUTE_NAME'), // falls back to general_settings.name
-    'channel'        => (int) env('ONELINK_CHANNEL', 1),
 
     // If set, requests with a different bank_mnemonic are rejected (code 01). Empty = accept any.
     'bank_mnemonic' => env('ONELINK_BANK_MNEMONIC', ''),
-
-    // Amount format used in responses:
-    //   plain  -> "27500" / "27500.50"         (as in BOP's sample document)
-    //   padded -> "+0000002750000"             (standard 1LINK: sign + 13 digits, last 2 = paisa)
-    // Incoming transaction_amount is accepted in either format.
-    'amount_format' => env('ONELINK_AMOUNT_FORMAT', 'plain'),
 
     // Total length of new challan numbers (the part after one_bill_prefix).
     // New numbers look like 1 + zero-padded challan id, e.g. 10000123 for id 123.

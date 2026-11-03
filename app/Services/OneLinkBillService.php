@@ -13,6 +13,7 @@ use Carbon\Carbon;
  * Consumer number = general_settings.one_bill_prefix + fee_challans.challan_no
  * Unpaid          = challan status "pending" or "review" (slip uploaded but not yet approved)
  * Paid            = challan status "approved"
+ * Expired         = challan status "expired" (set by the school when the next challan is issued)
  * Receivable      = total_amount up to and including due_date, amount_after_due_date after it
  */
 class OneLinkBillService
@@ -74,15 +75,21 @@ class OneLinkBillService
         return $challan->status === 'approved';
     }
 
+    public function isExpired(FeeChallan $challan): bool
+    {
+        return $challan->status === FeeChallan::STATUS_EXPIRED;
+    }
+
     /**
-     * Amounts for a challan as of a given (Pakistan-time) date.
+     * Amounts for a challan as of a given (Pakistan-time) date, in whole rupees
+     * (BOP: amounts are integers).
      */
     public function amountsFor(FeeChallan $challan, ?Carbon $asOf = null): array
     {
         $asOf ??= $this->now();
 
-        $within = round((float) $challan->total_amount, 2);
-        $after  = round((float) ($challan->amount_after_due_date ?? $within), 2);
+        $within = round((float) $challan->total_amount, 0, PHP_ROUND_HALF_UP);
+        $after  = round((float) ($challan->amount_after_due_date ?? $within), 0, PHP_ROUND_HALF_UP);
         $after  = max($after, $within);
 
         $isLate = $challan->due_date
@@ -91,7 +98,7 @@ class OneLinkBillService
         return [
             'within'     => $within,
             'after'      => $after,
-            'late_fee'   => round($after - $within, 2),
+            'late_fee'   => $after - $within,
             'is_late'    => $isLate,
             'receivable' => $isLate ? $after : $within,
         ];
