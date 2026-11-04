@@ -1,3 +1,28 @@
+# Force PHP 8.3
+<IfModule mime_module>
+    AddHandler application/x-httpd-ea-php83 .php .php8 .phtml
+</IfModule>
+
+# ============================================
+# SECURITY - Block sensitive folders
+# ============================================
+RedirectMatch 403 ^/(app|bootstrap|config|database|resources|routes|storage|tests|vendor)/.*$
+RedirectMatch 403 ^/(app|bootstrap|config|database|resources|routes|storage|tests|vendor)$
+
+# Block sensitive files (stronger method)
+RedirectMatch 403 (?i)^/(composer\.(json|lock)|package\.json|yarn\.lock|phpunit\.xml|webpack\.mix\.js|artisan|server\.php|\.env)$
+
+# Block all hidden files
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Disable directory listing
+Options -Indexes
+
+# ============================================
+# Laravel Rewrite Rules
+# ============================================
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
@@ -23,3 +48,10 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php83” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php83 .php .php8 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit

@@ -146,12 +146,13 @@ class FeeChallanController extends Controller
                         'pending'  => '<span class="badge bg-warning">Pending</span>',
                         'review'   => '<span class="badge bg-info">Review</span>',
                         'approved' => '<span class="badge bg-success">Approved</span>',
+                        'expired'  => '<span class="badge bg-secondary">Expired</span>',
                         default    => '<span class="badge bg-secondary">N/A</span>',
                     };
                 })
                 ->filterColumn('status', function ($query, $keyword) {
                     $keyword = strtolower(trim($keyword));
-                    if (in_array($keyword, ['pending', 'review', 'approved'])) {
+                    if (in_array($keyword, ['pending', 'review', 'approved', 'expired'])) {
                         $query->where('status', $keyword);
                     }
                 })

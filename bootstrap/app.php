@@ -21,5 +21,15 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // 1LINK / BOP requires HTTP 200 for every response, including 404/405 and crashes.
+        $exceptions->render(function (\Throwable $e, \Illuminate\Http\Request $request) {
+            // HttpResponseException already carries our own 200 reply (e.g. the rate limiter's).
+            if ($e instanceof \Illuminate\Http\Exceptions\HttpResponseException) {
+                return null;
+            }
+
+            if ($request->is('api/onelink', 'api/onelink/*')) {
+                return \App\Support\OneLinkResponse::fromException($request, $e);
+            }
+        });
     })->create();

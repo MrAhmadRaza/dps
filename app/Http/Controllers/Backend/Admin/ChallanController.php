@@ -178,6 +178,8 @@ class ChallanController extends Controller
                             return $row->payment?->source === 'onelink'
                                 ? '<span class="badge bg-success">Approved</span> <span class="badge bg-primary">1LINK</span>'
                                 : '<span class="badge bg-success">Approved</span>';
+                        case 'expired':
+                            return '<span class="badge bg-secondary">Expired</span>';
                         default:
                             return '<span class="badge bg-secondary">N/A</span>';
                     }
@@ -185,7 +187,7 @@ class ChallanController extends Controller
                 ->filterColumn('status', function ($query, $keyword) {
                     $keyword = strtolower(trim($keyword));
 
-                    if (in_array($keyword, ['pending', 'review', 'approved'])) {
+                    if (in_array($keyword, ['pending', 'review', 'approved', 'expired'])) {
                         $query->where('status', $keyword);
                     }
                 })
