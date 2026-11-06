@@ -173,7 +173,7 @@ class OneLinkTest extends TestCase
                 'institute_name' => 'DPS Test School',
                 'one_link_channel' => 1,
                 'consumer_detail' => 'Ali S/O Ahmed Khan',
-                'bill_status' => 'U',
+                'bill_status' => 'Unpaid',
                 'due_date' => '20260115',
                 'amount_within_dueDate' => 25000,
                 'amount_after_dueDate' => 25500,
@@ -255,7 +255,7 @@ class OneLinkTest extends TestCase
     public function test_inquiry_finds_old_short_challan_numbers_even_zero_padded(): void
     {
         $this->makeChallan(['challan_no' => '4521']);
-        $this->inquiry('0000' . '4521')->assertJson(['response_code' => '00', 'bill_status' => 'U']);
+        $this->inquiry('0000' . '4521')->assertJson(['response_code' => '00', 'bill_status' => 'Unpaid']);
         $this->inquiry(self::PREFIX . '4521')->assertJson(['response_code' => '00']);
     }
 
@@ -273,7 +273,7 @@ class OneLinkTest extends TestCase
         $c = $this->makeChallan(['status' => 'review']);
         ChallanPayment::create(['fee_challan_id' => $c->id, 'bank_name' => 'HBL', 'voucher_image' => 'upload/x.jpg']);
 
-        $this->inquiry($c->fresh()->challan_no)->assertJson(['bill_status' => 'U']);
+        $this->inquiry($c->fresh()->challan_no)->assertJson(['bill_status' => 'Unpaid']);
         $this->pay($c->fresh()->challan_no, 25000)->assertJson(['response_code' => '00']);
 
         $p = $c->fresh()->payment;
@@ -316,7 +316,7 @@ class OneLinkTest extends TestCase
         // Inquiry on a paid voucher: code 02 with the payment details.
         $this->inquiry($c->challan_no)->assertJson([
             'response_code' => '02', 'response_description' => 'Voucher already paid',
-            'bill_status' => 'P', 'date_paid' => '20260115', 'tran_auth_Id' => 'AUTH1', 'amount_receivable' => 25000,
+            'bill_status' => 'Paid', 'date_paid' => '20260115', 'tran_auth_Id' => 'AUTH1', 'amount_receivable' => 25000,
         ]);
     }
 
