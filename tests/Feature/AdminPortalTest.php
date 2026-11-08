@@ -410,4 +410,50 @@ class AdminPortalTest extends TestCase
         $this->asAdmin()->get(route('admin.view.admission', $this->student->id))->assertOk()
             ->assertSee('Ali Khan')->assertSee('Oct 2026')->assertSee('Nov 2026')->assertSee('2 in total');
     }
+
+    // ------------------------------------------------------------------ admission: existing parent lookup
+
+    public function test_parent_lookup_finds_father_whatever_the_stored_cnic_format(): void
+    {
+        // setUp parent is stored as plain digits (older records); add one stored with dashes
+        Parant::create([
+            'father_name' => 'Bilal Ahmed', 'father_nic' => '36302-1234567-1', 'password' => Hash::make('1234'),
+            'occupation' => 'Farmer', 'address' => 'Dunyapur', 'contact_no' => '0300-7654321',
+        ]);
+
+        $this->ajax(route('admin.search-parant', ['q' => '35202-1234567-1']))
+            ->assertOk()->assertJson(['statuscode' => 200, 'father_name' => 'Ahmed Khan', 'contact_no' => '0300-1234567', 'children' => ['Ali Khan']]);
+        $this->ajax(route('admin.search-parant', ['q' => '36302-1234567-1']))
+            ->assertOk()->assertJson(['statuscode' => 200, 'father_name' => 'Bilal Ahmed']);
+        $this->ajax(route('admin.search-parant', ['q' => '3630212345671']))
+            ->assertOk()->assertJson(['statuscode' => 200, 'father_name' => 'Bilal Ahmed']);
+        $this->ajax(route('admin.search-parant', ['q' => '11111-2222222-3']))
+            ->assertOk()->assertJson(['statuscode' => 404]);
+    }
+
+    public function test_new_admission_joins_an_existing_parent_stored_without_dashes(): void
+    {
+        $this->asAdmin()->post(route('admin.admission.submit'), [
+            'name' => 'Sara Khan', 'date_of_birth' => '2017-03-01', 'gender' => 'Female',
+            'father_name' => 'Ahmed Khan', 'father_nic' => '35202-1234567-1', 'password' => '',
+            'contact_no' => '0300-1234567', 'occupation' => 'Teacher', 'address' => 'Dunyapur', 'status' => 'active',
+            'academic_session_id' => $this->session->id, 'session_item_id' => $this->item->id,
+            'previous_school' => 'None', 'fees_paid_last_institution' => 0, 'discount' => 0,
+            'student_photo' => 'data:image/png;base64,' . base64_encode(str_repeat('x', 120)),
+        ])->assertSessionHasNoErrors();
+
+        $this->assertSame(1, Parant::count(), 'a duplicate parent was created');
+        $this->assertSame($this->parent->id, Student::where('name', 'Sara Khan')->value('parent_id'));
+        $this->assertTrue(Hash::check('1234', $this->parent->fresh()->password), 'existing portal password changed');
+
+        foreach (glob(public_path('upload/admission/stu_*')) as $f) {
+            if (filemtime($f) >= time() - 60 && filesize($f) === 120) { @unlink($f); }
+        }
+    }
+
+    public function test_admission_form_says_father_cnic(): void
+    {
+        $this->asAdmin()->get(route('admin.add.admission'))->assertOk()->assertSee('Father CNIC')->assertDontSee('Father NIC');
+        $this->asAdmin()->get(route('admin.edit.admission', $this->student->id))->assertOk()->assertSee('Father CNIC')->assertDontSee('Father NIC');
+    }
 }

@@ -129,41 +129,58 @@ class AdmissionController extends Controller
         $sessions = AcademicSession::where('status','=' , 'active')->get();
         return view('admin.admission.addAdmission',compact('sessions','pageTitle'));
     }
-    // Parent Search
-    public function searchParant(Request $request)
+    // Parent search for the admission form: finds an already registered father by CNIC.
+    public function searchParant(Request $request): JsonResponse
     {
-        $search = $request->q;
-        $parent = Parant::query()
-            ->where('father_nic', $search)
-            ->first([
-                'id',
-                'father_name',
-                'father_nic',
-                'mother_name',
-                'occupation',
-                'income',
-                'address',
-                'contact_no',
-            ]);
-        if (!$parent) {
+        $parent = $this->findParentByCnic((string) $request->q);
+
+        if (! $parent) {
             return response()->json([
                 'statuscode' => 404,
-                'message' => 'Parent not found',
+                'message'    => 'Parent not found',
             ]);
         }
 
         return response()->json([
             'statuscode'  => 200,
+            'id'          => $parent->id,
             'father_name' => $parent->father_name,
             'father_nic'  => $parent->father_nic,
             'mother_name' => $parent->mother_name,
             'occupation'  => $parent->occupation,
             'income'      => $parent->income,
             'address'     => $parent->address,
-            'contact_no'  => $parent->contact_no,
+            'contact_no'  => $this->formatMobile($parent->contact_no),
+            'children'    => $parent->students()->pluck('name')->all(),
         ]);
     }
-  
+
+    /**
+     * CNICs are stored either with dashes (12345-1234567-1, what this form saves)
+     * or as plain digits (older/imported records). Match either, whatever was typed.
+     */
+    private function findParentByCnic(?string $input): ?Parant
+    {
+        $digits = preg_replace('/\D/', '', (string) $input);
+        if (strlen($digits) !== 13) {
+            return null;
+        }
+        $dashed = substr($digits, 0, 5) . '-' . substr($digits, 5, 7) . '-' . substr($digits, 12);
+
+        return Parant::whereIn('father_nic', [$dashed, $digits])->first()
+            ?? Parant::whereRaw("REPLACE(REPLACE(father_nic, '-', ''), ' ', '') = ?", [$digits])->first();
+    }
+
+    /** 03001234567 -> 0300-1234567 (the format the form validates); anything else unchanged. */
+    private function formatMobile(?string $value): ?string
+    {
+        $digits = preg_replace('/\D/', '', (string) $value);
+
+        return strlen($digits) === 11 && str_starts_with($digits, '03')
+            ? substr($digits, 0, 4) . '-' . substr($digits, 4)
+            : $value;
+    }
+
    // View Admission
     public function viewAdmission(int $id): View
     {
@@ -547,7 +564,8 @@ class AdmissionController extends Controller
     // Store Admission Details
     public function submitAdmission(Request $request): RedirectResponse
     {
-        $parentExists = Parant::where('father_nic', $request->father_nic)->exists();
+        $existingParent = $this->findParentByCnic($request->father_nic);
+        $parentExists = (bool) $existingParent;
 
         $request->merge([
             'discount' => $request->boolean('discount'),
@@ -603,14 +621,17 @@ class AdmissionController extends Controller
             'discount_notes'              => 'nullable|string',
             'receipt_no'                  => 'nullable|string',
             'fee_paid_date'               => 'nullable|date',
+        ], [], [
+            'father_nic' => 'father CNIC',
+            'guardian_nic' => 'guardian CNIC',
         ]);
 
         $student = null;
         $challan = null;
 
-        DB::transaction(function () use ($validated, &$student, &$challan) {
+        DB::transaction(function () use ($validated, $existingParent, &$student, &$challan) {
 
-            $getParentPortal = Parant::where('father_nic', $validated['father_nic'])->first();
+            $getParentPortal = $existingParent;
 
             if (!$getParentPortal) {
                 $parent = Parant::create([
@@ -806,6 +827,9 @@ class AdmissionController extends Controller
             Rule::unique('students', 'receipt_no')->ignore($student->id),
             'fee_paid_date' => 'nullable|date',
             'status' => 'required|in:active,inactive',
+        ], [], [
+            'father_nic' => 'father CNIC',
+            'guardian_nic' => 'guardian CNIC',
         ]);
         $validated['discount'] = (int) $validated['discount'];
         $validated['discount_amount'] = $validated['discount'] === 1
@@ -847,7 +871,7 @@ class AdmissionController extends Controller
             //Check Password if exit or not
             $password = !empty($validated['password']) ? Hash::make($validated['password']) : $student->parent->password;
             //Check the portal id exit or not
-            $getParentPortal = Parant::with('students:id,parent_id')->where('father_nic', $validated['father_nic'])->first();
+            $getParentPortal = $this->findParentByCnic($validated['father_nic']);
             
             // Update Parent
             if($getParentPortal)

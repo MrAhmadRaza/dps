@@ -94,9 +94,10 @@
                         <!-- Parent Fields -->
                        
                         <div class="col-md-6">
-                            <label>Father NIC <span class="text-danger">*</span></label>
+                            <label for="father_nic">Father CNIC <span class="text-danger">*</span></label>
                             <input type="text" name="father_nic" id="father_nic" value="{{old('father_nic')}}" class="form-control" placeholder="12345-1234567-1" maxlength="15"
-                                inputmode="numeric" required>
+                                inputmode="numeric" autocomplete="off" required aria-describedby="parentLookupHint">
+                            <div class="form-text" id="parentLookupHint" aria-live="polite">Enter the CNIC first. If the father is already registered, his details are filled in for you.</div>
                         </div>
 
                          <div class="col-md-6">
@@ -849,72 +850,96 @@
         });
 
     });
-    // Auto Fill if Parent records exits
+    // Existing parent lookup by father CNIC: fills in the family details so the
+    // new student is added to the same parent account (and the same portal login).
     let parentSearchTimeout;
+    let lastLookup = null;
+    let filledFromLookup = false;
+    const parentFields = ['father_name', 'mother_name', 'occupation', 'income', 'address', 'contact_no'];
+    const nicPattern = /^\d{5}-\d{7}-\d$/;
+    const defaultHint = 'Enter the CNIC first. If the father is already registered, his details are filled in for you.';
+
+    function setParentHint(html, tone) {
+        const hint = document.getElementById('parentLookupHint');
+        if (!hint) return;
+        hint.className = 'form-text' + (tone ? ' text-' + tone : '');
+        hint.innerHTML = html;
+    }
+
+    function escapeHtml(text) {
+        return String(text ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
     function searchParentByNic() {
         const fatherNic = $('#father_nic').val().trim();
-        // Sirf complete NIC par search
-        const nicPattern = /^\d{5}-\d{7}-\d$/;
-
-        if (!nicPattern.test(fatherNic)) {
+        if (!nicPattern.test(fatherNic) || fatherNic === lastLookup) {
             return;
         }
+        lastLookup = fatherNic;
+        setParentHint('<span class="spinner-border spinner-border-sm me-1"></span>Checking for a registered parent…');
+
         $.ajax({
             url: "{{ route('admin.search-parant') }}",
             type: "GET",
-            data: {
-                q: fatherNic
-            },
+            dataType: 'json',
+            data: { q: fatherNic },
             success: function (data) {
+                if ($('#father_nic').val().trim() !== fatherNic) return; // CNIC changed meanwhile
                 const passwordField = document.getElementById('password');
+
                 if (data.statuscode === 200) {
-                    // Existing Parent
-                    $('#father_name').val(data.father_name);
-                    $('#mother_name').val(data.mother_name);
-                    $('#occupation').val(data.occupation);
-                    $('#income').val(data.income);
-                    $('#address').val(data.address);
-                    $('#contact_no').val(data.contact_no)
-                    // Existing parent => password required nahi
+                    // Existing parent: use his record
+                    parentFields.forEach(f => $('#' + f).val(data[f] ?? '').removeClass('is-invalid').trigger('change'));
+                    filledFromLookup = true;
                     if (passwordField) {
                         passwordField.value = '';
                         passwordField.removeAttribute('required');
+                        passwordField.placeholder = 'Keeps the existing portal password';
                     }
+                    const kids = (data.children || []).length
+                        ? ' Children already registered: ' + data.children.map(escapeHtml).join(', ') + '.'
+                        : '';
+                    setParentHint('<i class="fa-solid fa-circle-check me-1"></i><strong>Registered parent found: ' + escapeHtml(data.father_name) +
+                        '.</strong> His details are filled in and this student will be added to the same parent account.' + kids, 'success');
                 } else {
-                    // New Parent
-                    $('#father_name').val('');
-                    $('#mother_name').val('');
-                    $('#occupation').val('');
-                    $('#income').val('');
-                    $('#address').val('');
-                    $('#contact_no').val('');
-
-                    // New parent => password generate
-                    if (passwordField) {
-                        passwordField.value = generatePassword(4);
-                        passwordField.setAttribute('required', 'required');
+                    // New parent: clear only what an earlier lookup filled in
+                    if (filledFromLookup) {
+                        parentFields.forEach(f => $('#' + f).val(''));
+                        filledFromLookup = false;
                     }
+                    if (passwordField) {
+                        if (!passwordField.value) passwordField.value = generatePassword(4);
+                        passwordField.setAttribute('required', 'required');
+                        passwordField.placeholder = 'password';
+                    }
+                    setParentHint('<i class="fa-solid fa-user-plus me-1"></i>No registered parent with this CNIC. A new parent account will be created.', 'muted');
                 }
             },
             error: function (xhr) {
+                lastLookup = null;
+                setParentHint('<i class="fa-solid fa-triangle-exclamation me-1"></i>Could not check this CNIC (' + xhr.status + '). You can still fill in the details.', 'danger');
                 console.log('Parent search error:', xhr);
             }
         });
     }
-    // NIC Input / Paste - Debounce Search
+
+    // Typing / paste: wait until the CNIC is complete, then look it up
     $('#father_nic').on('input', function () {
-        // Previous timeout cancel
         clearTimeout(parentSearchTimeout);
         const value = $(this).val().trim();
-        // Complete NIC nahi hai to request nahi
-        const nicPattern = /^\d{5}-\d{7}-\d$/;
         if (!nicPattern.test(value)) {
+            if (value === '') setParentHint(defaultHint);
             return;
         }
-        // User typing/paste ke baad 800ms wait
-        parentSearchTimeout = setTimeout(function () {
-            searchParentByNic();
-        }, 800);
+        parentSearchTimeout = setTimeout(searchParentByNic, 400);
+    });
+    $('#father_nic').on('blur change', function () {
+        clearTimeout(parentSearchTimeout);
+        searchParentByNic();
+    });
+    // Coming back to the form after a validation error with the CNIC already filled
+    $(function () {
+        if (nicPattern.test($('#father_nic').val().trim())) searchParentByNic();
     });
 </script>
 

@@ -103,7 +103,7 @@
                             
 
                             <div class="col-md-6">
-                                <label>Father NIC <span class="text-danger">*</span></label>
+                                <label for="father_nic">Father CNIC <span class="text-danger">*</span></label>
                                 <input type="text" id="father_nic" name="father_nic" class="form-control"
                                     value="{{ old('father_nic', $student->parent->father_nic ?? '') }}"
                                     placeholder="12345-1234567-1" maxlength="15" inputmode="numeric" required>
