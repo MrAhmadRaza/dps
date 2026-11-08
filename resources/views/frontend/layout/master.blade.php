@@ -3,15 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'DPS Dunyapur - Parent Portal')</title>
-    <meta name="description" content="@yield('description', 'The official Portal of Dunyapur Public School — track attendance, fees, results and circulars in one secure place.')">
+    <title>@yield('title', 'Dunyapur Public School')</title>
+    <meta name="description" content="@yield('description', 'Dunyapur Public School — a trusted institution in Dunyapur, Punjab, offering a rigorous academic programme, modern science and computer labs, and a secure, green campus.')">
+    <meta name="theme-color" content="#061A3A">
+
+    {{-- Social sharing --}}
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="@yield('title', config('school.name'))">
+    <meta property="og:description" content="@yield('description', 'Knowledge · Discipline · Success')">
+    <meta property="og:image" content="{{ asset('frontend_assets/img/hero-main.jpg') }}">
+
     @include('frontend.include.css')
+    @yield('head')
 </head>
 <body>
+    <a class="dps-skip" href="#main">Skip to content</a>
 
     @include('frontend.include.header')
 
-    @yield('content')
+    <main id="main">
+        @yield('content')
+    </main>
 
     @include('frontend.include.footer')
 

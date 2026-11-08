@@ -1,308 +1,311 @@
 @extends('frontend.layout.master')
 
-@section('title', 'DPS Dunyapur — Parent Portal')
-@section('description', 'The official Parent Portal of Dunyapur Public School. Track attendance, fees, results and circulars — securely, in one place.')
+@php
+    $s = config('school');
+    $years = now()->year - $s['founded'];
+    $img = fn ($name) => asset('frontend_assets/img/' . $name . '.jpg');
+@endphp
+
+@section('title', 'Dunyapur Public School — Knowledge · Discipline · Success')
+@section('description', 'Dunyapur Public School (DPS Dunyapur): a trusted school in Dunyapur, Punjab since ' . $s['founded'] . '. Science and computer labs, a well-stocked library, a secure green campus and an online Parent Portal.')
+
+@section('head')
+<link rel="preload" as="image" href="{{ $img('hero-main') }}">
+@endsection
 
 @section('content')
 
 {{-- ============ HERO ============ --}}
-<header class="dps-hero" id="home">
-    <div id="dpsHeroCarousel" class="carousel slide dps-hero-carousel" data-bs-ride="carousel" data-bs-interval="4500">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="{{ asset('frontend_assets/dps_images/IMG-20260709-WA0055.jpg') }}" loading="lazy" alt="School Corridor">
-            </div>
-            <div class="carousel-item">
-                <img src="{{ asset('frontend_assets/dps_images/IMG-20260709-WA0045.jpg') }}" loading="lazy" alt="Students walking on campus">
-            </div>
-            <div class="carousel-item">
-                <img src="{{ asset('frontend_assets/dps_images/IMG-20260709-WA0013.jpg') }}" loading="lazy" alt="Group of graduating students">
-            </div>
-            <div class="carousel-item">
-                <img src="{{ asset('frontend_assets/dps_images/IMG-20260709-WA0069.jpg') }}" loading="lazy" alt="Campus view">
-            </div>
-            <div class="carousel-item">
-                <img src="{{ asset('frontend_assets/dps_images/IMG-20260709-WA0068.jpg') }}" loading="lazy" alt="School building">
-            </div>
-            <div class="carousel-item">
-                <img src="{{ asset('frontend_assets/dps_images/IMG-20260709-WA0110.jpg') }}" loading="lazy" alt="Students">
+<section class="dps-hero" id="home" aria-label="Welcome">
+    <div class="dps-hero-slides" aria-hidden="true">
+        <div class="dps-hero-slide is-active" style="background-image:url('{{ $img('hero-main') }}')"></div>
+        <div class="dps-hero-slide" data-bg="{{ $img('hero-courtyard') }}"></div>
+        <div class="dps-hero-slide" data-bg="{{ $img('hero-arcade') }}"></div>
+    </div>
+    <div class="dps-hero-shade"></div>
+
+    <div class="container dps-hero-inner">
+        <div class="dps-hero-content">
+            <span class="dps-eyebrow dps-eyebrow-light">Est. {{ $s['founded'] }} &nbsp;·&nbsp; Dunyapur, Punjab</span>
+            <h1 class="dps-hero-title">Shaping minds.<br>Building <em>character.</em></h1>
+            <p class="dps-hero-lead">
+                For over {{ $years }} years, Dunyapur Public School has prepared young people to think clearly,
+                act with integrity and lead with confidence.
+            </p>
+            <div class="dps-hero-actions">
+                <a href="#admissions" class="btn dps-btn dps-btn-gold dps-btn-lg">Admissions {{ $s['admissions_session'] }} <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="#about" class="btn dps-btn dps-btn-outline-light dps-btn-lg">Discover DPS</a>
             </div>
         </div>
-
-        <button class="carousel-control-prev" type="button" data-bs-target="#dpsHeroCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#dpsHeroCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-    </div>
-
-    <div class="dps-hero-overlay"></div>
-</header>
-{{-- ============ TRUST / STATS STRIP ============ --}}
-<section class="dps-stats" id="stats">
-    <div class="container">
-        <div class="row g-4">
-            <div class="col-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="dps-stat-item">
-                     <i class="fas fa-user-plus"></i>
-                    <h3>2.3k</h3>
-                    <p>Active Admissions</p>
-                </div>
-            </div>
-
-             <div class="col-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="dps-stat-item">
-                   <i class="fas fa-user-graduate"></i>
-                    <h3>66k</h3>
-                    <p>Alumni</p>
-                </div>
-            </div>
-            
-            <div class="col-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="dps-stat-item">
-                <i class="fas fa-users"></i>
-                    <h3>30k</h3>
-                    <p>Parents</p>
-                </div>
-            </div>
-           
+        <div class="dps-hero-dots" role="tablist" aria-label="Hero images">
+            <button class="is-active" aria-label="Image 1"></button>
+            <button aria-label="Image 2"></button>
+            <button aria-label="Image 3"></button>
         </div>
     </div>
 </section>
 
-{{-- ============ PRINCIPAL MESSAGE ============ --}}
-<section class="dps-principal">
+{{-- ============ QUICK LINKS ============ --}}
+<section class="dps-quick" aria-label="Quick links">
     <div class="container">
-        <div class="row align-items-center g-5">
-            <div class="col-lg-4 text-center" data-aos="fade-right">
-                <div class="dps-principal-photo-wrap">
-                    <img src="{{asset('frontend_assets/dps_images/principal.jpeg')}}" loading="lazy" alt="Portrait of the Principal of DPS Dunyapur" class="dps-principal-photo">
-                </div>
-                <h5 class="dps-principal-name">Mr. Muhammad Amjad </h5>
-                <span class="dps-principal-role">Principal, DPS Dunyapur</span>
-            </div>
-            <div class="col-lg-8" data-aos="fade-left">
-                <i class="fa-solid fa-quote-left dps-quote-icon"></i>
-                <span class="dps-section-eyebrow">Principal's Message</span>
-                <h2 class="dps-section-title">"Every child deserves a school that truly sees them."</h2>
-                <p class="dps-about-text">
-                    At DPS Dunyapur, we believe education is a partnership between school and home. The Parent
-                    Portal is our commitment to that partnership — bringing you closer to your child's daily
-                    progress, achievements and needs, with complete transparency and care.
-                </p>
-                <p class="dps-about-text">
-                    On behalf of our entire faculty, thank you for trusting us with your child's future. We look
-                    forward to walking this journey together.
-                </p>
-            </div>
-        </div>
-    </div>
-</section>
-
-{{-- ============ ABOUT ============ --}}
-<section class="dps-about" id="about">
-    <div class="container">
-        <div class="row align-items-center g-5">
-            <div class="col-lg-6" data-aos="fade-right">
-                <div class="dps-about-img-wrap">
-                    <img src="{{asset('frontend_assets/dps_images/building.jpeg')}}" loading="lazy" alt="DPS Dunyapur campus building" class="dps-about-img-main">
-                    <div class="dps-badge-float">
-                        <i class="fa-solid fa-circle-check"></i>
-                        <div>
-                            <strong>Trusted Since 1992</strong>
-                            <span>Four decades of academic legacy</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6" data-aos="fade-left">
-                <span class="dps-section-eyebrow">About Our School</span>
-                <h2 class="dps-section-title">A legacy of learning, rooted in Dunyapur</h2>
-                <p class="dps-about-text">
-                    Dunyapur Public School has shaped generations of confident, capable learners since 1985.
-                    We combine a rigorous academic curriculum with strong character education, modern facilities,
-                    and a genuinely caring campus culture — so every child is known, supported and challenged
-                    to do their best.
-                </p>
-                <p class="dps-about-text">
-                    The Parent Portal extends that same care beyond the school gates, giving families a clear,
-                    real-time window into their child's academic journey.
-                </p>
-                <ul class="dps-about-list">
-                    <li><i class="fa-solid fa-circle-check"></i> Purpose-built classrooms &amp; science labs</li>
-                    <li><i class="fa-solid fa-circle-check"></i> Experienced, degree-qualified faculty</li>
-                    <li><i class="fa-solid fa-circle-check"></i> CCTV-monitored, secure campus</li>
-                </ul>
-                <a href="#services" class="btn dps-btn-outline">Explore Parent Services</a>
-            </div>
-        </div>
-    </div>
-</section>
-
-{{-- ============ PARENT SERVICES ============ --}}
-<section class="dps-services" id="services">
-    <div class="container">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <span class="dps-section-eyebrow">Parent Services</span>
-            <h2 class="dps-section-title">Everything you need, in one dashboard</h2>
-            <p class="dps-section-sub">Built for busy parents who want clarity, not paperwork.</p>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="0">
-                <div class="dps-service-card">
-                    <div class="dps-service-icon"><i class="fa-solid fa-credit-card"></i></div>
-                    <h5>Fee Payment &amp; Invoices</h5>
-                    <p>Pay tuition fees online and download printable invoices in seconds.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
-                <div class="dps-service-card">
-                    <div class="dps-service-icon"><i class="fa-solid fa-calendar-check"></i></div>
-                    <h5>Attendance Tracking</h5>
-                    <p>Get real-time attendance updates and daily notifications for your child.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
-                <div class="dps-service-card">
-                    <div class="dps-service-icon"><i class="fa-solid fa-clipboard-list"></i></div>
-                    <h5>Results &amp; Report Cards</h5>
-                    <p>View term results, progress reports and download report cards anytime.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
-                <div class="dps-service-card">
-                    <div class="dps-service-icon"><i class="fa-solid fa-bullhorn"></i></div>
-                    <h5>Homework &amp; Circulars</h5>
-                    <p>Never miss homework, school notices or event circulars again.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-{{-- ============ SECURE LOGIN PROCESS ============ --}}
-<section class="dps-login-process" id="login-process">
-    <div class="container">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <span class="dps-section-eyebrow dps-eyebrow-light">Getting Started</span>
-            <h2 class="dps-section-title dps-title-light">Secure login, in three simple steps</h2>
-            <p class="dps-section-sub dps-sub-light">Your child's data is protected end-to-end at every step.</p>
-        </div>
-
-        <div class="row g-4 dps-step-row">
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
-                <div class="dps-step-card">
-                    <div class="dps-step-number">1</div>
-                    <i class="fa-solid fa-id-badge dps-step-icon"></i>
-                    <h5>Get Your Credentials</h5>
-                    <p>Collect your unique Parent ID and temporary password from the school office.</p>
-                </div>
-            </div>
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="150">
-                <div class="dps-step-card">
-                    <div class="dps-step-number">2</div>
-                    <i class="fa-solid fa-shield-halved dps-step-icon"></i>
-                    <h5>Verify Your Identity</h5>
-                    <p>Log in and confirm your details with a one-time OTP sent to your registered number.</p>
-                </div>
-            </div>
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="dps-step-card">
-                    <div class="dps-step-number">3</div>
-                    <i class="fa-solid fa-gauge-high dps-step-icon"></i>
-                    <h5>Access Your Dashboard</h5>
-                    <p>View attendance, results, fees and school updates — all from one screen.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-center mt-5" data-aos="fade-up">
-            <a href="{{ route('parent.signIn') }}" class="btn dps-btn-primary dps-btn-lg">
-                <i class="fa-solid fa-right-to-bracket"></i> Go to Login Portal
+        <div class="dps-quick-grid">
+            <a href="#admissions" class="dps-quick-item">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span><strong>Admissions</strong><small>Join DPS for {{ $s['admissions_session'] }}</small></span>
+                <i class="fa-solid fa-arrow-right dps-quick-arrow"></i>
+            </a>
+            <a href="{{ route('parent.signIn') }}" class="dps-quick-item">
+                <i class="fa-solid fa-user-shield"></i>
+                <span><strong>Parent Portal</strong><small>Profiles &amp; fee records</small></span>
+                <i class="fa-solid fa-arrow-right dps-quick-arrow"></i>
+            </a>
+            <a href="{{ route('parent.signIn') }}" class="dps-quick-item">
+                <i class="fa-solid fa-file-invoice"></i>
+                <span><strong>Fee Challans</strong><small>View, print &amp; upload proof</small></span>
+                <i class="fa-solid fa-arrow-right dps-quick-arrow"></i>
+            </a>
+            <a href="#contact" class="dps-quick-item">
+                <i class="fa-solid fa-location-dot"></i>
+                <span><strong>Visit Campus</strong><small>Directions &amp; contact</small></span>
+                <i class="fa-solid fa-arrow-right dps-quick-arrow"></i>
             </a>
         </div>
     </div>
 </section>
 
-{{-- ============ WHY CHOOSE DPS ============ --}}
-<section class="dps-why" id="why-dps">
+{{-- ============ WELCOME / ABOUT ============ --}}
+<section class="dps-section dps-about" id="about">
     <div class="container">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <span class="dps-section-eyebrow">Why Families Choose Us</span>
-            <h2 class="dps-section-title">Why Choose DPS Dunyapur</h2>
+        <div class="row align-items-center gy-5 gx-lg-5">
+            <div class="col-lg-6 order-lg-2" data-aos="fade-up">
+                <span class="dps-eyebrow">Welcome to DPS</span>
+                <h2 class="dps-title">A legacy of learning in the heart of Dunyapur</h2>
+                <p class="dps-lead">
+                    Since {{ $s['founded'] }}, Dunyapur Public School has shaped generations of confident,
+                    capable learners — combining a rigorous academic programme with strong character education.
+                </p>
+                <p>
+                    Our students learn in purpose-built classrooms, practise science in dedicated physics,
+                    chemistry and biology laboratories, and read widely in a well-stocked library — all on a
+                    green, secure campus where every child is known, supported and challenged to do their best.
+                </p>
+                <div class="dps-about-actions">
+                    <a href="#principal" class="dps-link">Read the Principal's message <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-6 order-lg-1" data-aos="fade-up" data-aos-delay="100">
+                <div class="dps-about-media">
+                    <img src="{{ $img('campus-building') }}" alt="The red-brick main building of Dunyapur Public School" class="dps-about-main" loading="lazy">
+                    <img src="{{ $img('lab-physics') }}" alt="Students in a physics practical with their teacher" class="dps-about-inset" loading="lazy">
+                    <div class="dps-about-seal">
+                        <span>Since</span>
+                        <strong>{{ $s['founded'] }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dps-stats" data-aos="fade-up">
+            <div class="dps-stat">
+                <strong><span data-count="{{ $years }}">{{ $years }}</span>+</strong>
+                <span>Years of legacy</span>
+            </div>
+            @foreach ($s['stats'] as $stat)
+                <div class="dps-stat">
+                    <strong><span data-count="{{ $stat['value'] }}">{{ number_format($stat['value']) }}</span>{{ $stat['suffix'] }}</strong>
+                    <span>{{ $stat['label'] }}</span>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+{{-- ============ VALUES (from the school crest) ============ --}}
+<section class="dps-section dps-values" aria-labelledby="valuesTitle">
+    <div class="container">
+        <div class="dps-section-head text-center" data-aos="fade-up">
+            <span class="dps-eyebrow dps-eyebrow-light">Our Values</span>
+            <h2 class="dps-title dps-title-light" id="valuesTitle">Three words on our crest. One promise to every family.</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up">
+                <div class="dps-value">
+                    <span class="dps-value-num">I</span>
+                    <h3>Knowledge</h3>
+                    <p>A rigorous, well-rounded curriculum taught by experienced educators, with hands-on learning in the lab, the library and the classroom.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="dps-value">
+                    <span class="dps-value-num">II</span>
+                    <h3>Discipline</h3>
+                    <p>Clear expectations, good manners and self-control — habits that help students focus, respect others and take ownership of their work.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="dps-value">
+                    <span class="dps-value-num">III</span>
+                    <h3>Success</h3>
+                    <p>Strong results, yes — but also confident, capable young people ready for higher studies, careers and responsible citizenship.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- ============ PRINCIPAL'S MESSAGE ============ --}}
+<section class="dps-section dps-principal" id="principal">
+    <div class="container">
+        <div class="row align-items-center gy-5 gx-lg-5">
+            <div class="col-lg-4 col-md-6 mx-auto" data-aos="fade-up">
+                <figure class="dps-principal-photo">
+                    <img src="{{ $img('principal') }}" alt="Portrait of {{ $s['principal']['name'] }}" loading="lazy">
+                </figure>
+            </div>
+            <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
+                <span class="dps-eyebrow">From the Principal's Desk</span>
+                <blockquote class="dps-quote">
+                    “Every child deserves a school that truly sees them.”
+                </blockquote>
+                <p>
+                    At DPS Dunyapur, we believe education is a partnership between school and home. Our teachers
+                    know each student by name, and our doors are always open to parents who want to be part of
+                    their child's journey.
+                </p>
+                <p>
+                    On behalf of our entire faculty, thank you for trusting us with your child's future. We look
+                    forward to walking this journey together.
+                </p>
+                <div class="dps-signature">
+                    <strong>{{ $s['principal']['name'] }}</strong>
+                    <span>{{ $s['principal']['title'] }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- ============ ACADEMICS ============ --}}
+<section class="dps-section dps-academics" id="academics">
+    <div class="container">
+        <div class="dps-section-head d-lg-flex align-items-end justify-content-between" data-aos="fade-up">
+            <div>
+                <span class="dps-eyebrow">Academics</span>
+                <h2 class="dps-title">Learning that grows with your child</h2>
+            </div>
+            <p class="dps-section-sub">A structured path from the early grades to matriculation, built on strong foundations and practical learning.</p>
         </div>
 
         <div class="row g-4">
-            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="0">
-                <div class="dps-why-card">
-                    <div class="dps-why-icon"><i class="fa-solid fa-award"></i></div>
-                    <h5>Academic Excellence</h5>
-                    <p>A rigorous, well-rounded curriculum delivered by experienced educators, consistently producing top board results.</p>
-                </div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                <article class="dps-program">
+                    <div class="dps-program-img"><img src="{{ $img('library-shelves') }}" alt="Students choosing books in the library" loading="lazy"></div>
+                    <div class="dps-program-body">
+                        <span class="dps-program-tag">Stage 01</span>
+                        <h3>Primary Years</h3>
+                        <p>Strong literacy and numeracy, a love of reading and the habits of curiosity that carry a child through school.</p>
+                    </div>
+                </article>
             </div>
-            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="150">
-                <div class="dps-why-card">
-                    <div class="dps-why-icon"><i class="fa-solid fa-lock"></i></div>
-                    <h5>Safe Campus</h5>
-                    <p>CCTV-monitored premises, trained security staff and strict visitor protocols keep every student safe.</p>
-                </div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <article class="dps-program">
+                    <div class="dps-program-img"><img src="{{ $img('computer-lab') }}" alt="A teacher explaining code in the computer lab" loading="lazy"></div>
+                    <div class="dps-program-body">
+                        <span class="dps-program-tag">Stage 02</span>
+                        <h3>Middle Years</h3>
+                        <p>Broader subjects, computer literacy and growing independence, with close guidance from subject specialists.</p>
+                    </div>
+                </article>
             </div>
-            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="dps-why-card">
-                    <div class="dps-why-icon"><i class="fa-solid fa-eye"></i></div>
-                    <h5>Digital Transparency</h5>
-                    <p>Real-time access to attendance, results and fee records means no surprises — just clear, honest visibility.</p>
-                </div>
+            <div class="col-lg-4 col-md-12" data-aos="fade-up" data-aos-delay="200">
+                <article class="dps-program">
+                    <div class="dps-program-img"><img src="{{ $img('lab-chemistry') }}" alt="Students performing a chemistry experiment" loading="lazy"></div>
+                    <div class="dps-program-body">
+                        <span class="dps-program-tag">Stage 03</span>
+                        <h3>Secondary &amp; Matriculation</h3>
+                        <p>Focused board preparation in science and humanities streams, with regular practicals in our dedicated laboratories.</p>
+                    </div>
+                </article>
             </div>
         </div>
     </div>
 </section>
 
-{{-- ============ CAMPUS GALLERY ============ --}}
-<section class="dps-gallery" id="gallery">
+{{-- ============ CAMPUS & FACILITIES ============ --}}
+<section class="dps-section dps-campus" id="campus">
     <div class="container">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <span class="dps-section-eyebrow">Life at DPS</span>
-            <h2 class="dps-section-title">Campus Gallery</h2>
-            <p class="dps-section-sub">A glimpse into everyday life at Dunyapur Public School.</p>
+        <div class="dps-section-head text-center" data-aos="fade-up">
+            <span class="dps-eyebrow">Campus Life</span>
+            <h2 class="dps-title">A campus built for learning</h2>
+            <p class="dps-section-sub mx-auto">Laboratories, a library, open grounds and green walkways — spaces that make every school day count.</p>
         </div>
 
-        <div class="row g-3 dps-gallery-grid">
+        <div class="dps-bento">
+            <figure class="dps-tile dps-tile-xl" data-aos="fade-up">
+                <img src="{{ $img('lab-practical') }}" alt="Students and teacher around a physics apparatus" loading="lazy">
+                <figcaption><i class="fa-solid fa-flask"></i><strong>Science Laboratories</strong><span>Dedicated physics, chemistry and biology labs for regular hands-on practicals.</span></figcaption>
+            </figure>
+            <figure class="dps-tile" data-aos="fade-up" data-aos-delay="50">
+                <img src="{{ $img('library') }}" alt="Students reading in the school library" loading="lazy">
+                <figcaption><i class="fa-solid fa-book-open"></i><strong>Library</strong><span>A quiet reading room with a broad collection.</span></figcaption>
+            </figure>
+            <figure class="dps-tile" data-aos="fade-up" data-aos-delay="100">
+                <img src="{{ $img('computer-lab-2') }}" alt="Teacher at the whiteboard in the computer lab" loading="lazy">
+                <figcaption><i class="fa-solid fa-computer"></i><strong>Computer Lab</strong><span>Practical computing from the middle years.</span></figcaption>
+            </figure>
+            <figure class="dps-tile" data-aos="fade-up" data-aos-delay="50">
+                <img src="{{ $img('grounds') }}" alt="Open lawns in front of the school buildings" loading="lazy">
+                <figcaption><i class="fa-solid fa-futbol"></i><strong>Sports Grounds</strong><span>Wide lawns for games, sports and assemblies.</span></figcaption>
+            </figure>
+            <figure class="dps-tile" data-aos="fade-up" data-aos-delay="100">
+                <img src="{{ $img('entrance') }}" alt="The guarded main entrance of the school" loading="lazy">
+                <figcaption><i class="fa-solid fa-shield-halved"></i><strong>Secure Campus</strong><span>Controlled entry and a watchful, caring staff.</span></figcaption>
+            </figure>
+            <figure class="dps-tile dps-tile-wide" data-aos="fade-up" data-aos-delay="150">
+                <img src="{{ $img('pathway') }}" alt="A tree-lined pathway with flowering bougainvillea" loading="lazy">
+                <figcaption><i class="fa-solid fa-leaf"></i><strong>Green Campus</strong><span>Tree-lined walkways, gardens and open courtyards.</span></figcaption>
+            </figure>
+            <figure class="dps-tile dps-tile-wide" data-aos="fade-up" data-aos-delay="200">
+                <img src="{{ $img('playground') }}" alt="Play equipment in the school garden" loading="lazy">
+                <figcaption><i class="fa-solid fa-children"></i><strong>Play Areas</strong><span>Safe outdoor play spaces set among lawns and flowering trees.</span></figcaption>
+            </figure>
+        </div>
+    </div>
+</section>
+
+{{-- ============ PARENT PORTAL ============ --}}
+<section class="dps-section dps-portal" id="portal">
+    <div class="container">
+        <div class="row align-items-center gy-5 gx-lg-5">
             <div class="col-lg-6" data-aos="fade-up">
-                <div class="dps-gallery-item dps-gallery-big">
-                    <img src="{{asset('frontend_assets/dps_images/IMG-20260709-WA0092.jpg')}}" loading="lazy" alt="Students in the school library">
-                    <div class="dps-gallery-caption"><i class="fa-solid fa-camera"></i> Campus Library</div>
+                <span class="dps-eyebrow dps-eyebrow-light">DPS Parent Portal</span>
+                <h2 class="dps-title dps-title-light">Your child's school records, a click away</h2>
+                <p class="dps-portal-lead">
+                    The Parent Portal gives every DPS family secure, round-the-clock access to their children's
+                    profiles and fee records — no queues, no lost paperwork.
+                </p>
+                <ul class="dps-portal-features">
+                    <li><i class="fa-solid fa-children"></i><div><strong>All your children, one login</strong><span>See each child's admission profile and class details.</span></div></li>
+                    <li><i class="fa-solid fa-file-invoice"></i><div><strong>Fee challans online</strong><span>View and print monthly challans whenever you need them.</span></div></li>
+                    <li><i class="fa-solid fa-cloud-arrow-up"></i><div><strong>Upload payment proof</strong><span>Paid at the bank? Upload the receipt and track its approval.</span></div></li>
+                </ul>
+                <div class="dps-portal-actions">
+                    <a href="{{ route('parent.signIn') }}" class="btn dps-btn dps-btn-gold dps-btn-lg"><i class="fa-solid fa-right-to-bracket"></i> Sign in to the Portal</a>
+                    <span class="dps-portal-hint"><i class="fa-solid fa-circle-info"></i> Sign in with the father's CNIC and the password issued by the school office.</span>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="row g-3 h-100">
-                    <div class="col-6" data-aos="fade-up" data-aos-delay="0">
-                        <div class="dps-gallery-item dps-gallery-small">
-                            <img src="{{asset('frontend_assets/dps_images/IMG-20260709-WA0031.jpg')}}" loading="lazy" alt="Computer science lab">
-                            <div class="dps-gallery-caption"><i class="fa-solid fa-camera"></i> Physics Lab</div>
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="dps-portal-mock" aria-hidden="true">
+                    <div class="dps-mock-bar"><span></span><span></span><span></span><em>Parent Portal</em></div>
+                    <div class="dps-mock-body">
+                        <div class="dps-mock-head">
+                            <img src="{{ asset('frontend_assets/img/crest.png') }}" alt="">
+                            <div><strong>Fee Challans</strong><small>Academic session {{ $s['admissions_session'] }}</small></div>
                         </div>
-                    </div>
-                    <div class="col-6" data-aos="fade-up" data-aos-delay="100">
-                        <div class="dps-gallery-item dps-gallery-small">
-                            <img src="{{asset('frontend_assets/dps_images/IMG-20260709-WA0078.jpg')}}" loading="lazy" alt="Young students writing in classroom">
-                            <div class="dps-gallery-caption"><i class="fa-solid fa-camera"></i> Classrooms</div>
-                        </div>
-                    </div>
-                    <div class="col-6" data-aos="fade-up" data-aos-delay="200">
-                        <div class="dps-gallery-item dps-gallery-small">
-                            <img src="{{asset('frontend_assets/dps_images/IMG-20260709-WA0090.jpg')}}" loading="lazy" alt="Books and study materials">
-                            <div class="dps-gallery-caption"><i class="fa-solid fa-camera"></i> Reading Corner</div>
-                        </div>
-                    </div>
-                    <div class="col-6" data-aos="fade-up" data-aos-delay="300">
-                        <div class="dps-gallery-item dps-gallery-small">
-                            <img src="{{asset('frontend_assets/dps_images/IMG-20260709-WA0069.jpg')}}" loading="lazy" alt="Graduation ceremony">
-                            <div class="dps-gallery-caption"><i class="fa-solid fa-camera"></i> Convocation Day</div>
-                        </div>
+                        <div class="dps-mock-row"><div><b>Monthly Tuition Fee</b><small>Challan · Current month</small></div><span class="dps-pill dps-pill-warn">Pending</span></div>
+                        <div class="dps-mock-row"><div><b>Monthly Tuition Fee</b><small>Challan · Last month</small></div><span class="dps-pill dps-pill-ok">Approved</span></div>
+                        <div class="dps-mock-row"><div><b>Admission &amp; Annual Charges</b><small>Challan · New session</small></div><span class="dps-pill dps-pill-ok">Approved</span></div>
+                        <div class="dps-mock-actions"><span><i class="fa-solid fa-print"></i> Print challan</span><span><i class="fa-solid fa-cloud-arrow-up"></i> Upload receipt</span></div>
                     </div>
                 </div>
             </div>
@@ -310,45 +313,107 @@
     </div>
 </section>
 
-{{-- ============ FINAL CTA ============ --}}
-<section class="dps-final-cta">
-    <div class="container text-center" data-aos="zoom-in">
-        <i class="fa-solid fa-graduation-cap dps-final-cta-icon"></i>
-        <h2>Stay connected to your child's school journey</h2>
-        <p>Join thousands of DPS Dunyapur parents already using the portal.</p>
-        <a href="{{ route('parent.signIn') }}" class="btn dps-btn-primary dps-btn-lg">
-            <i class="fa-solid fa-right-to-bracket"></i> Access Parent Portal
-        </a>
+{{-- ============ ADMISSIONS ============ --}}
+<section class="dps-section dps-admissions" id="admissions" style="--bg:url('{{ $img('grounds-wide') }}')">
+    <div class="container">
+        <div class="dps-admissions-card" data-aos="fade-up">
+            <div class="row gy-4 align-items-center">
+                <div class="col-lg-5">
+                    <span class="dps-eyebrow">Admissions {{ $s['admissions_session'] }}</span>
+                    <h2 class="dps-title">Admissions are open</h2>
+                    <p>We welcome families who share our commitment to learning and good character. Visit the campus, meet our team and see DPS for yourself.</p>
+                    <div class="dps-admissions-actions">
+                        <a href="tel:{{ preg_replace('/\s+/', '', $s['phone']) }}" class="btn dps-btn dps-btn-navy"><i class="fa-solid fa-phone"></i> Call Admissions</a>
+                        <a href="https://wa.me/{{ $s['whatsapp'] }}" target="_blank" rel="noopener" class="btn dps-btn dps-btn-outline"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <ol class="dps-steps">
+                        <li>
+                            <span class="dps-step-num">1</span>
+                            <div><strong>Enquire &amp; visit</strong><p>Call, message or visit the admissions office during school hours to ask about seats and fees.</p></div>
+                        </li>
+                        <li>
+                            <span class="dps-step-num">2</span>
+                            <div><strong>Apply</strong><p>Complete the admission form at the school office with the child's B-Form, photographs and previous school record.</p></div>
+                        </li>
+                        <li>
+                            <span class="dps-step-num">3</span>
+                            <div><strong>Confirm your seat</strong><p>Receive your fee challan, pay at the bank, and get your Parent Portal login to follow along online.</p></div>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
-@endsection
+{{-- ============ GALLERY ============ --}}
+<section class="dps-section dps-gallery" id="gallery">
+    <div class="container">
+        <div class="dps-section-head d-lg-flex align-items-end justify-content-between" data-aos="fade-up">
+            <div>
+                <span class="dps-eyebrow">Gallery</span>
+                <h2 class="dps-title">Life at DPS</h2>
+            </div>
+            <p class="dps-section-sub">A glimpse of everyday life on our campus. Click any photo to view it larger.</p>
+        </div>
 
-@section('js')
-<script>
-    // Navbar background swap on scroll
-    const dpsNavbar = document.getElementById('dpsNavbar');
-    const toggleNavbarBg = () => {
-        if (window.scrollY > 60) {
-            dpsNavbar.classList.add('dps-scrolled');
-        } else {
-            dpsNavbar.classList.remove('dps-scrolled');
-        }
-    };
-    window.addEventListener('scroll', toggleNavbarBg);
-    toggleNavbarBg();
+        @php
+            $gallery = [
+                ['dps-sign', 'The DPS garden sign at the entrance', 'g-tall'],
+                ['hero-courtyard', 'The central courtyard', 'g-wide'],
+                ['microscopes', 'Biology practical with microscopes', ''],
+                ['arcade', 'Arched verandas along the classrooms', ''],
+                ['lab-biology', 'Students in the biology lab', ''],
+                ['red-block', 'The red-brick academic block', 'g-wide'],
+                ['garden', 'Gardens and play area', ''],
+                ['west-wing', 'Classroom wing and lawns', ''],
+            ];
+        @endphp
+        <div class="dps-gallery-grid">
+            @foreach ($gallery as [$file, $alt, $cls])
+                <button type="button" class="dps-gallery-item {{ $cls }}" data-full="{{ $img($file) }}" data-caption="{{ $alt }}" data-aos="fade-up">
+                    <img src="{{ $img($file) }}" alt="{{ $alt }}" loading="lazy">
+                    <span class="dps-gallery-zoom"><i class="fa-solid fa-expand"></i></span>
+                </button>
+            @endforeach
+        </div>
+    </div>
+</section>
 
-    // Ensure hero carousel auto-runs even if data attributes are overridden
-    document.addEventListener('DOMContentLoaded', function () {
-        const heroCarouselEl = document.getElementById('dpsHeroCarousel');
-        if (heroCarouselEl && window.bootstrap) {
-            new bootstrap.Carousel(heroCarouselEl, {
-                interval: 4500,
-                ride: 'carousel',
-                pause: false,
-                wrap: true
-            });
-        }
-    });
-</script>
+{{-- ============ CONTACT ============ --}}
+<section class="dps-section dps-contact" id="contact">
+    <div class="container">
+        <div class="row gy-5 gx-lg-5">
+            <div class="col-lg-5" data-aos="fade-up">
+                <span class="dps-eyebrow">Contact</span>
+                <h2 class="dps-title">Visit us in Dunyapur</h2>
+                <p>Our office is happy to answer questions about admissions, fees or the Parent Portal.</p>
+                <ul class="dps-contact-list">
+                    <li><i class="fa-solid fa-location-dot"></i><div><strong>Address</strong><span>{{ $s['address'] }}</span></div></li>
+                    <li><i class="fa-solid fa-phone"></i><div><strong>Phone</strong><a href="tel:{{ preg_replace('/\s+/', '', $s['phone']) }}">{{ $s['phone'] }}</a></div></li>
+                    <li><i class="fa-solid fa-envelope"></i><div><strong>Email</strong><a href="mailto:{{ $s['email'] }}">{{ $s['email'] }}</a></div></li>
+                    <li><i class="fa-regular fa-clock"></i><div><strong>Office hours</strong><span>{{ $s['hours'] }}</span></div></li>
+                </ul>
+            </div>
+            <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
+                <div class="dps-map">
+                    <iframe title="Map showing Dunyapur Public School"
+                        src="https://maps.google.com/maps?q={{ urlencode($s['map_query']) }}&z=15&output=embed"
+                        loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- ============ LIGHTBOX ============ --}}
+<div class="dps-lightbox" id="dpsLightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" hidden>
+    <button type="button" class="dps-lb-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    <button type="button" class="dps-lb-prev" aria-label="Previous photo"><i class="fa-solid fa-chevron-left"></i></button>
+    <figure><img src="" alt=""><figcaption></figcaption></figure>
+    <button type="button" class="dps-lb-next" aria-label="Next photo"><i class="fa-solid fa-chevron-right"></i></button>
+</div>
+
 @endsection
