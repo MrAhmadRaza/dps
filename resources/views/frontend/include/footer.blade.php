@@ -1,65 +1,66 @@
+@php $s = config('school'); @endphp
 <!-- ============ FOOTER ============ -->
 <footer class="dps-footer">
-    <div class="dps-footer-glow"></div>
     <div class="container">
-        <div class="row gy-5 dps-footer-top">
-            <div class="col-lg-4">
-                <a href="{{ url('/') }}" class="dps-brand dps-footer-brand">
-                     <span class="dps-brand-mark">
-                        <img src="{{ asset('upload/logo/logo.png') }}" alt="Dunyapur Public School Logo" loading="eager">
-                    </span>
-                    <span class="dps-brand-text">
-                        DPS <strong>DUNYAPUR</strong>
-                        <small>Dunyapur Public School</small>
+        <div class="row gy-5">
+            <div class="col-lg-4 col-md-6">
+                <a href="{{ url('/') }}" class="dps-footer-brand">
+                    <img src="{{ asset('frontend_assets/img/crest.png') }}" alt="{{ $s['name'] }} crest" width="64" height="64" loading="lazy">
+                    <span>
+                        <strong>Dunyapur Public School</strong>
+                        <small>{{ implode(' · ', $s['motto']) }}</small>
                     </span>
                 </a>
                 <p class="dps-footer-about">
-                    Nurturing character, curiosity and excellence in the heart of Dunyapur since 1985.
-                    A trusted institution for generations of families.
+                    Educating the young people of Dunyapur since {{ $s['founded'] }} — with rigorous academics,
+                    strong values and a campus where every child is known.
                 </p>
                 <div class="dps-footer-social">
-                    <a href="https://www.facebook.com/" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="https://www.youtube.com"  target="_blank" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
-                    <a href="https://www.instagram.com" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="https://wa.me/923280990563" target="_blank" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="{{ $s['social']['facebook'] }}" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="{{ $s['social']['instagram'] }}" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="{{ $s['social']['youtube'] }}" target="_blank" rel="noopener" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="https://wa.me/{{ $s['whatsapp'] }}" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
                 </div>
             </div>
 
-            <div class="col-lg-2 col-sm-4">
-                <h6 class="dps-footer-heading">Explore</h6>
+            <div class="col-lg-2 col-md-3 col-6">
+                <h6 class="dps-footer-heading">The School</h6>
                 <ul class="dps-footer-links">
-                    <li><a href="#about">About Us</a></li>
-                    <li><a href="#services">Parent Services</a></li>
-                    <li><a href="#why-dps">Why DPS</a></li>
-                    <li><a href="#gallery">Campus Gallery</a></li>
+                    <li><a href="#about">About DPS</a></li>
+                    <li><a href="#principal">Principal's Message</a></li>
+                    <li><a href="#academics">Academics</a></li>
+                    <li><a href="#campus">Campus Life</a></li>
+                    <li><a href="#gallery">Gallery</a></li>
                 </ul>
             </div>
 
-            <div class="col-lg-2 col-sm-4">
-                <h6 class="dps-footer-heading">Portal</h6>
+            <div class="col-lg-2 col-md-3 col-6">
+                <h6 class="dps-footer-heading">Quick Links</h6>
                 <ul class="dps-footer-links">
-                    <li><a href="{{ route('parent.signIn') }}">Parent Login</a></li>
-                    <li><a href="#login-process">How It Works</a></li>
-                    <li><a href="#">Fee Payment</a></li>
-                    <li><a href="#">Result Cards</a></li>
+                    <li><a href="#admissions">Admissions</a></li>
+                    <li><a href="{{ route('parent.signIn') }}">Parent Portal</a></li>
+                    <li><a href="{{ route('parent.signIn') }}">Fee Challans</a></li>
+                    <li><a href="{{ route('admin.signIn') }}">Staff Login</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
                 </ul>
             </div>
 
-            <div class="col-lg-4 col-sm-4">
-                <h6 class="dps-footer-heading">Contact</h6>
+            <div class="col-lg-4 col-md-6">
+                <h6 class="dps-footer-heading">Get in Touch</h6>
                 <ul class="dps-footer-contact">
-                    <li><i class="fa-solid fa-location-dot"></i> Multan Road, Dunyapur, Punjab, Pakistan</li>
-                    <li><i class="fa-solid fa-phone"></i> +92 300 1234567</li>
-                    <li><i class="fa-solid fa-envelope"></i> info@dpsdunyapur.edu.pk</li>
+                    <li><i class="fa-solid fa-location-dot"></i><span>{{ $s['address'] }}</span></li>
+                    <li><i class="fa-solid fa-phone"></i><a href="tel:{{ preg_replace('/\s+/', '', $s['phone']) }}">{{ $s['phone'] }}</a></li>
+                    <li><i class="fa-solid fa-envelope"></i><a href="mailto:{{ $s['email'] }}">{{ $s['email'] }}</a></li>
+                    <li><i class="fa-regular fa-clock"></i><span>{{ $s['hours'] }}</span></li>
                 </ul>
             </div>
         </div>
 
-        <hr class="dps-footer-divider">
-
         <div class="dps-footer-bottom">
-            <p class="mb-0">&copy; {{ date('Y') }} Dunyapur Public School (DPS Dunyapur). All rights reserved.</p>
-            <p class="mb-0 dps-footer-credit">Designed for a brighter, more transparent school community.</p>
+            <p>&copy; {{ date('Y') }} {{ $s['name'] }}. All rights reserved.</p>
+            <p class="dps-footer-motto">{{ implode(' · ', $s['motto']) }}</p>
         </div>
     </div>
 </footer>
+
+<a href="#main" class="dps-to-top" id="dpsToTop" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></a>

@@ -1,32 +1,49 @@
-<!-- ============ NAVBAR ============ -->
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top dps-navbar" id="dpsNavbar">
-    <div class="container">
-        <a class="navbar-brand dps-brand" href="{{ url('/') }}">
-            <span class="dps-brand-mark">
-                <img src="{{ asset('upload/logo/logo.png') }}" alt="Dunyapur Public School Logo" loading="eager">
-            </span>
-            <span class="dps-brand-text d-none d-sm-flex">
-                DPS <strong>DUNYAPUR</strong>
-                <small>Dunyapur Public School</small>
-            </span>
-        </a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#dpsNavContent" aria-controls="dpsNavContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="dpsNavContent">
-            <ul class="navbar-nav mx-auto dps-nav-links">
-                <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-                <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
-                <li class="nav-item"><a class="nav-link" href="#login-process">How It Works</a></li>
-                <li class="nav-item"><a class="nav-link" href="#why-dps">Why DPS</a></li>
-                <li class="nav-item"><a class="nav-link" href="#gallery">Gallery</a></li>
+@php $s = config('school'); @endphp
+<!-- ============ MASTHEAD (utility bar + main nav) ============ -->
+<div class="dps-masthead" id="dpsMasthead">
+    <div class="dps-topbar">
+        <div class="container d-flex align-items-center justify-content-between">
+            <ul class="dps-topbar-info d-none d-md-flex">
+                <li><i class="fa-solid fa-phone"></i> <a href="tel:{{ preg_replace('/\s+/', '', $s['phone']) }}">{{ $s['phone'] }}</a></li>
+                <li><i class="fa-solid fa-envelope"></i> <a href="mailto:{{ $s['email'] }}">{{ $s['email'] }}</a></li>
+                <li class="d-none d-xl-flex"><i class="fa-regular fa-clock"></i> {{ $s['hours'] }}</li>
             </ul>
-
-            <a href="{{ route('parent.signIn') }}" class="btn dps-btn-primary dps-nav-cta">
-                <i class="fa-solid fa-shield-halved"></i> Login Portal
-            </a>
+            <ul class="dps-topbar-links">
+                <li><a href="{{ route('parent.signIn') }}"><i class="fa-solid fa-user-shield"></i> Parent Portal</a></li>
+                <li><a href="{{ route('admin.signIn') }}"><i class="fa-solid fa-lock"></i> Staff Login</a></li>
+            </ul>
         </div>
     </div>
-</nav>
+
+    <nav class="navbar navbar-expand-lg dps-navbar" aria-label="Main navigation">
+        <div class="container">
+            <a class="navbar-brand dps-brand" href="{{ url('/') }}">
+                <img src="{{ asset('frontend_assets/img/crest.png') }}" alt="{{ $s['name'] }} crest" class="dps-brand-crest" width="56" height="56">
+                <span class="dps-brand-text">
+                    <span class="dps-brand-name">Dunyapur Public School</span>
+                    <span class="dps-brand-motto">{{ implode(' · ', $s['motto']) }}</span>
+                </span>
+            </a>
+
+            <button class="navbar-toggler dps-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#dpsNav" aria-controls="dpsNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="dpsNav">
+                <ul class="navbar-nav ms-auto dps-nav">
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#academics">Academics</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#campus">Campus Life</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#portal">Parent Portal</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#gallery">Gallery</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                </ul>
+                <a href="#admissions" class="btn dps-btn dps-btn-gold dps-nav-cta">Apply Now</a>
+                <div class="dps-nav-mobile-links d-lg-none">
+                    <a href="{{ route('parent.signIn') }}"><i class="fa-solid fa-user-shield"></i> Parent Portal</a>
+                    <a href="{{ route('admin.signIn') }}"><i class="fa-solid fa-lock"></i> Staff Login</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
