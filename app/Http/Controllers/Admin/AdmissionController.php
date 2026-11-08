@@ -679,6 +679,7 @@ class AdmissionController extends Controller
                 'domicile'                   => $validated['domicile'] ?? null,
                 'academic_session_id'        => $validated['academic_session_id'] ?? null,
                 'session_item_id'            => $validated['session_item_id'] ?? null,
+                'previous_school'            => $validated['previous_school'],
                 'discount'                   => $validated['discount'] ?? 0,
                 'discount_amount'            => $validated['discount'] ? $validated['discount_amount'] : 0,
                 'discount_due_date'          => $validated['discount'] ? $validated['discount_due_date'] : null,

@@ -444,11 +444,23 @@ class AdminPortalTest extends TestCase
 
         $this->assertSame(1, Parant::count(), 'a duplicate parent was created');
         $this->assertSame($this->parent->id, Student::where('name', 'Sara Khan')->value('parent_id'));
+        $this->assertSame('None', Student::where('name', 'Sara Khan')->value('previous_school'), 'previous school not saved');
         $this->assertTrue(Hash::check('1234', $this->parent->fresh()->password), 'existing portal password changed');
 
         foreach (glob(public_path('upload/admission/stu_*')) as $f) {
             if (filemtime($f) >= time() - 60 && filesize($f) === 120) { @unlink($f); }
         }
+    }
+
+    public function test_edit_form_shows_saved_previous_school(): void
+    {
+        $this->student->update(['previous_school' => 'Govt Primary School No. 2']);
+        $this->asAdmin()->get(route('admin.edit.admission', $this->student->id))->assertOk()
+            ->assertSee('value="Govt Primary School No. 2"', false)->assertDontSee('Not saved when this student was admitted');
+
+        $this->student->update(['previous_school' => null]);
+        $this->asAdmin()->get(route('admin.edit.admission', $this->student->id))->assertOk()
+            ->assertSee('Not saved when this student was admitted');
     }
 
     public function test_admission_form_says_father_cnic(): void

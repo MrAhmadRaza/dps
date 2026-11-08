@@ -291,6 +291,9 @@
                                 <label>Previous School <span class="text-danger">*</span></label>
                                 <input type="text" name="previous_school" class="form-control"
                                     value="{{ old('previous_school', $student->previous_school) }}" required>
+                                @if (blank($student->previous_school))
+                                    <div class="form-text text-warning">Not saved when this student was admitted. Please enter it once.</div>
+                                @endif
                             </div>
                             <div class="col-md-6">
                                 <label>Last Fee Paid Upto</label>
