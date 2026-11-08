@@ -13,12 +13,6 @@ use App\Http\Controllers\Backend\Admin\ParantController;
 use App\Http\Controllers\Backend\Admin\CategoryController;
 use App\Http\Controllers\Backend\Admin\HeadCategoryController;
 use App\Http\Controllers\Backend\Admin\Setting;
-// Parants
-use App\Http\Controllers\Backend\Admin\Auth\ParantSignInController;
-use App\Http\Controllers\Backend\Admin\Parant\DashboardController as ParantDashboardController;
-use App\Http\Controllers\Backend\Admin\Parant\StudentController;
-use App\Http\Controllers\Backend\Admin\Parant\FeeChallanController;
-use App\Http\Controllers\Backend\Admin\Parant\ChallanPaymentController;
 
 
 // Public Route Acccess
@@ -143,42 +137,4 @@ Route::prefix('admin')->as('admin.')->group(function(){
     });
 });
 
-// Parent Routes
-// ===========================Parent Routes==============================================
-Route::prefix('parent')->as('parent.')->group(function(){
-
-    /** Authentication */
-    Route::controller(ParantSignInController::class)->group(function () {
-        Route::get('/sign-in', 'signIn')->name('signIn')->middleware('ParantRedirectLog');
-        Route::post('/sign-in', 'signInSubmit')->name('signIn.submit');
-        Route::post('/logout', 'logout')->name('logout');
-    });
-
-    /** Dashboard */
-    Route::middleware(['auth:parents','preventBackHistory'])->group(function () {
-        Route::controller(ParantDashboardController ::class)->group(function(){
-            Route::get('/dashboard','index')->name('index');
-        });
-
-         /** Admission */
-        Route::controller(StudentController ::class)->group(function(){
-            Route::get('/student', 'index')->name('student.index');
-            Route::get('/student/view/{id}','viewStudent')->name('view.student');
-        });
-
-          /** Fee Challan */
-        Route::controller(FeeChallanController ::class)->group(function(){
-            Route::get('/challan/fee-challan', 'index')->name('fee-challan');
-            Route::get('/challan/fee-challans/ajax','getChallans')->name('fee-challans.ajax');
-            Route::get('/print/challan-voucher/{voucher}', 'printChallan')->name('print.challan');
-        });
-
-           /** Fee Challan */
-        Route::controller(ChallanPaymentController ::class)->group(function(){
-            Route::post('/challan/upload',  'uploadChallan')->name('challan.upload');
-            Route::get('/challan/view-challan/{id}', 'viewChallan')->name('view.challan');
-        });
-
-    });
-
-});
+// Parent portal routes live in routes/parent.php (loaded from bootstrap/app.php).
