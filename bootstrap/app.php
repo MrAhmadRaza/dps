@@ -10,14 +10,23 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        then: function () {
+            // Parent portal: its own route file, independent of the admin routes in web.php
+            \Illuminate\Support\Facades\Route::middleware('web')->group(base_path('routes/parent.php'));
+        },
     )
     ->withMiddleware(function (Middleware $middleware) {
          $middleware->alias([
             'auth' => \App\Http\Middleware\Authenticate::class,
             'preventBackHistory' => \App\Http\Middleware\PreventBackHistory::class,
             'redirectIfLoggedIn' => \App\Http\Middleware\RedirectIfLoggedIn::class,
-            'ParantRedirectLog' => \App\Http\Middleware\ParantRedirectLog::class,
+            'parent.guest' => \App\Http\Middleware\Parent\RedirectIfParent::class,
 
+        ]);
+
+        // Parent portal gets its own session cookie (must run before StartSession)
+        $middleware->web(prepend: [
+            \App\Http\Middleware\Parent\UseParentSessionCookie::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
