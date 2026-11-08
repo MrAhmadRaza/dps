@@ -245,7 +245,7 @@
                             <div class="full-box-row">
                                 <div class="full-box-label">In Words</div>
                                 <div class="full-box">
-                                    {{ \NumberFormatter::create('en', \NumberFormatter::SPELLOUT)->format($total) }}
+                                    {{ \App\Support\AmountInWords::english($total) }}
                                     rupees
                                 </div>
                             </div>

@@ -355,10 +355,7 @@
 
                     <div class="full-box">
 
-                        {{ \NumberFormatter::create(
-                            'en',
-                            \NumberFormatter::SPELLOUT
-                        )->format($total) }}
+                        {{ \App\Support\AmountInWords::english($total) }}
 
                         rupees
 

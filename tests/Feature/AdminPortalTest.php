@@ -467,6 +467,20 @@ class AdminPortalTest extends TestCase
         }
     }
 
+    public function test_amount_in_words_needs_no_intl_extension(): void
+    {
+        $this->assertSame('ten thousand two hundred', \App\Support\AmountInWords::english('10200.00'));
+        $this->assertSame('one million two hundred thirty-four thousand five hundred sixty-seven', \App\Support\AmountInWords::english(1234567));
+        $this->assertSame('zero', \App\Support\AmountInWords::english(null));
+
+        // Printed challan and vouchers show the total in words
+        $c = $this->challan('pending', '2026-11', '2026-11-20', 5000);
+        $this->asAdmin()->get(route('admin.challan.print', $c->id))->assertOk()->assertSee('five thousand rupees');
+        $this->asAdmin()->get(route('admin.voucher.print', $this->voucher->id))->assertOk()->assertSee('rupees');
+        $this->asAdmin()->get(route('admin.voucher.admission', $this->student->id))->assertOk()->assertSee('rupees');
+        $this->asAdmin()->get(route('admin.voucher.view', $this->voucher->id))->assertOk()->assertSee('five thousand');
+    }
+
     public function test_new_admission_status_defaults_to_active(): void
     {
         $this->asAdmin()->get(route('admin.add.admission'))->assertOk()
