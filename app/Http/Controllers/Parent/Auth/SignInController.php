@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Parent\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Models\Parant;
+use App\Services\ParentPortal\ParentPortal;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\View\View;
 
@@ -38,10 +41,14 @@ class SignInController extends Controller
                 ->with('error', "Too many sign-in attempts. Try again in {$seconds} seconds.");
         }
 
-        $signedIn = Auth::guard('parents')->attempt([
-            'father_nic' => $validated['father_nic'],
-            'password'   => $validated['password'],
-        ], $request->boolean('remember'));
+        // CNICs may be stored with dashes (12345-1234567-1, what the admission form saves)
+        // or as plain digits (older/imported records). Accept either.
+        $parent = $this->findParentByCnic($validated['father_nic']);
+        $signedIn = $parent && $this->passwordMatches($validated['password'], $parent);
+
+        if ($signedIn) {
+            Auth::guard('parents')->login($parent, $request->boolean('remember'));
+        }
 
         if (!$signedIn) {
             RateLimiter::hit($throttleKey, 60);
@@ -65,6 +72,30 @@ class SignInController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('parent.signIn')->with('success', 'You have signed out.');
+    }
+
+    private function findParentByCnic(string $input): ?Parant
+    {
+        $digits = preg_replace('/\D/', '', $input);
+        if (strlen($digits) !== 13) {
+            return null;
+        }
+
+        return Parant::whereIn('father_nic', [ParentPortal::formatCnic($digits), $digits])->first()
+            // Any other spacing/dash variant
+            ?? Parant::whereRaw("REPLACE(REPLACE(father_nic, '-', ''), ' ', '') = ?", [$digits])->first();
+    }
+
+    private function passwordMatches(string $password, Parant $parent): bool
+    {
+        try {
+            return Hash::check($password, $parent->getAuthPassword());
+        } catch (\RuntimeException $e) {
+            // Stored value isn't a bcrypt hash (e.g. an imported plain-text password).
+            // Refuse it; the office can reset the password from the admin portal.
+            \Log::warning('Parent sign-in: stored password is not a valid hash', ['parent_id' => $parent->id]);
+            return false;
+        }
     }
 
     private function throttleKey(Request $request): string

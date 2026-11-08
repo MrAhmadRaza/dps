@@ -11,7 +11,7 @@
         <h2 class="pp-card-title"><i class="fa-solid fa-id-card" aria-hidden="true"></i> Your details</h2>
         <dl class="pp-dl">
             @include('parent.partials.dl-row', ['label' => 'Father\'s name', 'value' => $parent->father_name])
-            @include('parent.partials.dl-row', ['label' => 'CNIC', 'value' => $parent->father_nic])
+            @include('parent.partials.dl-row', ['label' => 'CNIC', 'value' => \App\Services\ParentPortal\ParentPortal::formatCnic($parent->father_nic)])
             @include('parent.partials.dl-row', ['label' => 'Mother\'s name', 'value' => $parent->mother_name])
             @include('parent.partials.dl-row', ['label' => 'Contact', 'value' => $parent->contact_no])
             @include('parent.partials.dl-row', ['label' => 'Address', 'value' => $parent->address])

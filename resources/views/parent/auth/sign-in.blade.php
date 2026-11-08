@@ -9,12 +9,12 @@
     <aside class="pp-auth-side" @if($photo) style="--auth-photo: url('{{ $photo }}')" @endif>
         <a href="{{ url('/') }}" class="pp-home"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to the school website</a>
         <div>
-            <h2>Your children's fees, in one place.</h2>
-            <p>See what's due for each child, pay through your bank app with the 1Bill number, and send the school your payment proof.</p>
+            <h2>Stay connected with your child's school.</h2>
+            <p>The {{ $contact['short'] }} parent portal brings home and school closer: one place to follow your children's school life and keep up with what matters.</p>
             <ul>
-                <li><i class="fa-solid fa-file-invoice" aria-hidden="true"></i> Current and past fee challans</li>
-                <li><i class="fa-solid fa-print" aria-hidden="true"></i> Print a challan for the bank</li>
-                <li><i class="fa-solid fa-camera" aria-hidden="true"></i> Upload a photo of the paid challan</li>
+                <li><i class="fa-solid fa-user-graduate" aria-hidden="true"></i> Your children's school profiles</li>
+                <li><i class="fa-solid fa-file-invoice" aria-hidden="true"></i> Fee challans and payments</li>
+                <li><i class="fa-solid fa-chart-line" aria-hidden="true"></i> Results and academic progress <span class="pp-soon">Coming soon</span></li>
             </ul>
         </div>
         <span class="pp-auth-foot">{{ $contact['name'] }}</span>
@@ -28,7 +28,7 @@
             </a>
 
             <h1>Sign in</h1>
-            <p>Use the father's CNIC and the password given by the school office.</p>
+            <p>Stay connected with DPS: your children's profiles, fees and, soon, their results. Sign in with the father's CNIC and the password given by the school office.</p>
 
             @include('parent.partials.flash')
 

@@ -544,3 +544,7 @@ a.pp-row--flush:hover strong { color: var(--brand); }
     .pp-slip-head .pp-status { order: 3; margin-left: calc(44px + .85rem); }
     .pp-slip-who { flex-basis: calc(100% - 44px - .85rem); }
 }
+.pp-soon {
+    font-size: .74rem; font-weight: 600; color: var(--navy-950); background: var(--gold);
+    padding: .15rem .5rem; border-radius: 999px; margin-left: .25rem;
+}

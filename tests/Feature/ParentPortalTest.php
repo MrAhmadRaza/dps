@@ -236,6 +236,32 @@ class ParentPortalTest extends TestCase
         $this->assertGuest('parents');
     }
 
+    public function test_sign_in_with_cnic_stored_as_plain_digits(): void
+    {
+        $this->parent->update(['father_nic' => '3520212345671']);
+
+        // Typed with dashes (the sign-in form formats it)
+        $this->post(route('parent.signIn.submit'), ['father_nic' => '35202-1234567-1', 'password' => 'secret1'])
+            ->assertRedirect(route('parent.index'));
+        $this->assertAuthenticatedAs($this->parent->fresh(), 'parents');
+    }
+
+    public function test_sign_in_with_plain_digits_typed(): void
+    {
+        $this->post(route('parent.signIn.submit'), ['father_nic' => '3520212345671', 'password' => 'secret1'])
+            ->assertRedirect(route('parent.index'));
+        $this->assertAuthenticatedAs($this->parent, 'parents');
+    }
+
+    public function test_plain_text_stored_password_is_refused_without_crashing(): void
+    {
+        \DB::table('parents')->where('id', $this->parent->id)->update(['password' => 'secret1']);
+
+        $this->post(route('parent.signIn.submit'), ['father_nic' => '35202-1234567-1', 'password' => 'secret1'])
+            ->assertRedirect()->assertSessionHas('error', 'The CNIC or password is incorrect.');
+        $this->assertGuest('parents');
+    }
+
     public function test_wrong_password_shows_error(): void
     {
         $this->post(route('parent.signIn.submit'), ['father_nic' => '35202-1234567-1', 'password' => 'wrong-pass'])

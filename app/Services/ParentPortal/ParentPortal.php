@@ -134,6 +134,16 @@ class ParentPortal
         ];
     }
 
+    /** "3520212345671" or "35202-1234567-1" -> "35202-1234567-1"; anything else is returned as-is. */
+    public static function formatCnic(?string $value): ?string
+    {
+        $digits = preg_replace('/\D/', '', (string) $value);
+
+        return strlen($digits) === 13
+            ? substr($digits, 0, 5) . '-' . substr($digits, 5, 7) . '-' . substr($digits, 12)
+            : $value;
+    }
+
     /** Office contact details, shared with the public website (config/school.php). */
     public static function contact(): array
     {

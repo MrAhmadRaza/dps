@@ -56,7 +56,7 @@
                 <h3 class="pp-subhead">Father</h3>
                 <dl class="pp-dl">
                     @include('parent.partials.dl-row', ['label' => 'Name', 'value' => $parent->father_name])
-                    @include('parent.partials.dl-row', ['label' => 'CNIC', 'value' => $parent->father_nic])
+                    @include('parent.partials.dl-row', ['label' => 'CNIC', 'value' => \App\Services\ParentPortal\ParentPortal::formatCnic($parent->father_nic)])
                     @include('parent.partials.dl-row', ['label' => 'Occupation', 'value' => $parent->occupation])
                     @include('parent.partials.dl-row', ['label' => 'Contact', 'value' => $parent->contact_no])
                     @include('parent.partials.dl-row', ['label' => 'Address', 'value' => $parent->address])
@@ -76,7 +76,7 @@
                 <dl class="pp-dl">
                     @include('parent.partials.dl-row', ['label' => 'Name', 'value' => $guardian->guardian_name])
                     @include('parent.partials.dl-row', ['label' => 'Relation', 'value' => $guardian->relation])
-                    @include('parent.partials.dl-row', ['label' => 'CNIC', 'value' => $guardian->guardian_nic])
+                    @include('parent.partials.dl-row', ['label' => 'CNIC', 'value' => \App\Services\ParentPortal\ParentPortal::formatCnic($guardian->guardian_nic)])
                     @include('parent.partials.dl-row', ['label' => 'Contact', 'value' => $guardian->contact_no])
                 </dl>
             @else
