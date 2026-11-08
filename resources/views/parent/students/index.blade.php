@@ -19,8 +19,8 @@
                 @include('parent.partials.avatar', ['student' => $student])
                 <span>
                     <strong>{{ $student->name }}</strong>
-                    <span>Class {{ $student->sessionItem->class ?? '—' }} {{ $student->sessionItem->section ?? '' }}</span>
-                    <span>{{ $student->academicSession->session_name ?? '' }}</span>
+                    <span class="pp-kid-meta">Class {{ $student->sessionItem->class ?? '—' }} {{ $student->sessionItem->section ?? '' }}</span>
+                    <span class="pp-kid-meta">{{ $student->academicSession->session_name ?? '' }}</span>
                     @if ($student->open_challans_count)
                         <span class="pp-status pp-status--warning"><i class="fa-solid fa-clock" aria-hidden="true"></i>{{ $student->open_challans_count }} unpaid</span>
                     @else

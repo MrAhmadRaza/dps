@@ -346,8 +346,9 @@ a.pp-row:hover { background: #F7F9FC; }
 .pp-kid { display: flex; gap: 1rem; align-items: center; padding: 1.15rem 1.25rem; color: inherit !important; }
 .pp-kid:hover { border-color: var(--line-strong); }
 .pp-kid strong { color: var(--ink); display: block; font-weight: 600; }
-.pp-kid span { color: var(--muted); font-size: .88rem; display: block; }
+.pp-kid-meta { color: var(--muted); font-size: .88rem; display: block; }
 .pp-kid .pp-status { margin-top: .45rem; }
+.pp-kid { height: 100%; }
 
 .pp-profile {
     display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap;
@@ -548,3 +549,6 @@ a.pp-row--flush:hover strong { color: var(--brand); }
     font-size: .74rem; font-weight: 600; color: var(--navy-950); background: var(--gold);
     padding: .15rem .5rem; border-radius: 999px; margin-left: .25rem;
 }
+
+/* Cards laid out by a grid get their spacing from the grid gap, not margins */
+:where(.pp-kids, .pp-stack, .pp-grid-2, .pp-slips) > .pp-card + .pp-card { margin-top: 0; }
