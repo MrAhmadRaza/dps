@@ -55,9 +55,8 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label>Date of Birth <span class="text-danger">*</span></label>
-                            <input type="date" value="{{old('date_of_birth')}}" name="date_of_birth" class="form-control" required>
-                            <div class="invalid-feedback">Please select date of birth.</div>
+                            <label for="date_of_birth">Date of Birth <span class="text-danger">*</span></label>
+                            @include('admin.partials.dob-input', ['value' => old('date_of_birth'), 'required' => true])
                         </div>
 
                         <div class="col-md-6">

@@ -456,4 +456,17 @@ class AdminPortalTest extends TestCase
         $this->asAdmin()->get(route('admin.add.admission'))->assertOk()->assertSee('Father CNIC')->assertDontSee('Father NIC');
         $this->asAdmin()->get(route('admin.edit.admission', $this->student->id))->assertOk()->assertSee('Father CNIC')->assertDontSee('Father NIC');
     }
+
+    public function test_date_of_birth_is_a_typed_field_that_posts_iso_dates(): void
+    {
+        $this->asAdmin()->get(route('admin.add.admission'))->assertOk()
+            ->assertSee('placeholder="DD/MM/YYYY"', false)
+            ->assertSee('<input type="hidden" name="date_of_birth" value="" data-dob-value>', false)
+            ->assertDontSee('<input type="date" value="" name="date_of_birth"', false);
+
+        // Edit shows the saved date as DD/MM/YYYY and keeps the ISO value for the server
+        $this->asAdmin()->get(route('admin.edit.admission', $this->student->id))->assertOk()
+            ->assertSee('value="01/01/2015"', false)
+            ->assertSee('<input type="hidden" name="date_of_birth" value="2015-01-01" data-dob-value>', false);
+    }
 }
