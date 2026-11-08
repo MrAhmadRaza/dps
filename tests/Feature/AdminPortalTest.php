@@ -457,6 +457,16 @@ class AdminPortalTest extends TestCase
         $this->asAdmin()->get(route('admin.edit.admission', $this->student->id))->assertOk()->assertSee('Father CNIC')->assertDontSee('Father NIC');
     }
 
+    public function test_admission_forms_check_fields_in_the_browser_before_sending(): void
+    {
+        foreach ([route('admin.add.admission'), route('admin.edit.admission', $this->student->id)] as $url) {
+            $this->asAdmin()->get($url)->assertOk()
+                ->assertSee('window.admissionWizard', false)
+                ->assertSee('Please fix', false)
+                ->assertSee('Fees Paid Last Institution? <span class="text-danger">*</span>', false);
+        }
+    }
+
     public function test_new_admission_status_defaults_to_active(): void
     {
         $this->asAdmin()->get(route('admin.add.admission'))->assertOk()

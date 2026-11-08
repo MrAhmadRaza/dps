@@ -261,7 +261,7 @@
                             <input type="date" name="last_fee_paid_upto" value="{{old('last_fee_paid_upto')}}" class="form-control" placeholder="Last Fee Paid Upto">
                         </div>
                         <div class="col-md-6">
-                            <label>Fees Paid Last Institution?</label>
+                            <label>Fees Paid Last Institution? <span class="text-danger">*</span></label>
                             <select name="fees_paid_last_institution" class="form-select" required>
                                 <option value="">Select</option>
                                 <option value="1" {{ old('fees_paid_last_institution') == '1' ? 'selected' : '' }}>Yes</option>
@@ -791,6 +791,8 @@
         // Initial Step
         // ==========================================================
         showStep(currentStep);
+        // Let the shared validator (partials/admission-validate) jump between steps
+        window.admissionWizard = { go: function (i) { currentStep = i; showStep(i); }, current: function () { return currentStep; } };
     });
     // Password Generate
     function generatePassword(length = 4) {
@@ -949,4 +951,5 @@
 
 <script src="{{ asset('admin_assets/js/academic-session.js') }}"></script>
 <script src="{{ asset('admin_assets/js/voucher.js') }}"></script>
+@include('admin.admission.partials.validate')
 @endsection
