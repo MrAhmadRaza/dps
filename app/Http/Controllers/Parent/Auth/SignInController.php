@@ -10,6 +10,7 @@ use App\Services\ParentPortal\ParentPortal;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class SignInController extends Controller
@@ -47,7 +48,7 @@ class SignInController extends Controller
         $signedIn = $parent && $this->passwordMatches($validated['password'], $parent);
 
         if ($signedIn) {
-            Auth::guard('parents')->login($parent, $request->boolean('remember'));
+            Auth::guard('parents')->login($parent, $request->boolean('remember') && $this->canRemember());
         }
 
         if (!$signedIn) {
@@ -84,6 +85,20 @@ class SignInController extends Controller
         return Parant::whereIn('father_nic', [ParentPortal::formatCnic($digits), $digits])->first()
             // Any other spacing/dash variant
             ?? Parant::whereRaw("REPLACE(REPLACE(father_nic, '-', ''), ' ', '') = ?", [$digits])->first();
+    }
+
+    /**
+     * "Keep me signed in" needs parents.remember_token (migration
+     * 2026_11_08_000001). Until that migration has run, sign in without it
+     * instead of failing.
+     */
+    private function canRemember(): bool
+    {
+        try {
+            return Schema::hasColumn('parents', 'remember_token');
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
     private function passwordMatches(string $password, Parant $parent): bool

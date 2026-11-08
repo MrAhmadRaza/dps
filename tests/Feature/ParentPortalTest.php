@@ -236,6 +236,28 @@ class ParentPortalTest extends TestCase
         $this->assertGuest('parents');
     }
 
+    public function test_keep_me_signed_in_sets_remember_cookie(): void
+    {
+        $response = $this->post(route('parent.signIn.submit'), ['father_nic' => '35202-1234567-1', 'password' => 'secret1', 'remember' => '1'])
+            ->assertRedirect(route('parent.index'));
+
+        $this->assertNotNull($this->parent->fresh()->remember_token);
+        $this->assertTrue(collect($response->headers->getCookies())->contains(fn ($c) => str_starts_with($c->getName(), 'remember_parents_')));
+    }
+
+    public function test_keep_me_signed_in_works_before_migration_is_run(): void
+    {
+        \Illuminate\Support\Facades\Schema::table('parents', fn ($t) => $t->dropColumn('remember_token'));
+
+        $this->post(route('parent.signIn.submit'), ['father_nic' => '35202-1234567-1', 'password' => 'secret1', 'remember' => '1'])
+            ->assertRedirect(route('parent.index'));
+        $this->assertAuthenticatedAs($this->parent, 'parents');
+
+        // Signing out must not try to write the missing column either
+        $this->post(route('parent.logout'))->assertRedirect(route('parent.signIn'));
+        $this->assertGuest('parents');
+    }
+
     public function test_sign_in_with_cnic_stored_as_plain_digits(): void
     {
         $this->parent->update(['father_nic' => '3520212345671']);
