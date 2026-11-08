@@ -457,6 +457,13 @@ class AdminPortalTest extends TestCase
         $this->asAdmin()->get(route('admin.edit.admission', $this->student->id))->assertOk()->assertSee('Father CNIC')->assertDontSee('Father NIC');
     }
 
+    public function test_new_admission_status_defaults_to_active(): void
+    {
+        $this->asAdmin()->get(route('admin.add.admission'))->assertOk()
+            ->assertSee('<option value="active" selected>Active</option>', false)
+            ->assertDontSee('Select Status');
+    }
+
     public function test_date_of_birth_is_a_typed_field_that_posts_iso_dates(): void
     {
         $this->asAdmin()->get(route('admin.add.admission'))->assertOk()

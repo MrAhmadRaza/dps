@@ -141,17 +141,12 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label>Status <span class="text-danger">*</span></label>
-
-                            <select name="status" class="form-select" required>
-                                <option value="">Select Status</option>
-                                <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>
-                                    Active
-                                </option>
-                                <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>
-                                    Inactive
-                                </option>
+                            <label for="status">Status</label>
+                            <select name="status" id="status" class="form-select" required>
+                                <option value="active" @selected(old('status', 'active') === 'active')>Active</option>
+                                <option value="inactive" @selected(old('status') === 'inactive')>Inactive</option>
                             </select>
+                            <div class="form-text">Active by default. Inactive students get no monthly challans and do not show in the parent portal.</div>
 
                             <div class="invalid-feedback">
                                 Please select status.
