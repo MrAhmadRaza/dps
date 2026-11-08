@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use App\Models\ChallanPayment;
 use App\Models\FeeChallan;
+use Illuminate\Support\Str;
 
 class ChallanPaymentController extends Controller
 {
@@ -21,21 +22,37 @@ class ChallanPaymentController extends Controller
                 'transaction_id'   => 'nullable|string|max:255',
                 'voucher_image'    => 'required|image|mimes:jpg,jpeg,png|max:2048',
             ]);
-            $challanPayment = ChallanPayment::where('fee_challan_id', $request->fee_challan_id)->first();
+            // Only the logged-in parent's own active children, and only unpaid challans
+            $parentId = auth()->guard('parents')->id();
+            $challan = FeeChallan::where('id', $request->fee_challan_id)
+                ->whereHas('student', function ($query) use ($parentId) {
+                    $query->where('parent_id', $parentId)->where('status', 'active');
+                })->first();
+            if (!$challan) {
+                return back()->with('error', 'Challan not found.');
+            }
+            if ($challan->status !== 'pending') {
+                return back()->with('error', 'A payment proof can only be uploaded for an unpaid challan.');
+            }
+
+            $challanPayment = ChallanPayment::withTrashed()->where('fee_challan_id', $challan->id)->first();
             if ($challanPayment && $challanPayment->source === ChallanPayment::SOURCE_ONELINK) {
                 return back()->with('error', 'This challan has already been paid through 1LINK.');
+            }
+            if ($challanPayment && $challanPayment->trashed()) {
+                $challanPayment->restore();
             }
             $imagePath = null;
             // ========== Image Upload ==========
             if ($request->hasFile('voucher_image')) {
 
                 $file     = $request->file('voucher_image');
-                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $filename = Str::random(40) . '.' . $file->extension();
                 $file->move(public_path('upload/challans'), $filename);
                 $imagePath = 'upload/challans/' . $filename;
                 if ($challanPayment && $challanPayment->voucher_image) {
                     $oldImagePath = public_path($challanPayment->voucher_image);
-                    if (file_exists($oldImagePath)) {
+                    if (is_file($oldImagePath)) {
                         unlink($oldImagePath);
                     }
                 }
@@ -52,7 +69,7 @@ class ChallanPaymentController extends Controller
             } else {
                 // Naya record create
                 ChallanPayment::create([
-                    'fee_challan_id' => $request->fee_challan_id,
+                    'fee_challan_id' => $challan->id,
                     'bank_name'      => $request->bank_name,
                     'paid_date'      => $request->paid_date,
                     'transaction_id' => $request->transaction_id,
@@ -60,15 +77,15 @@ class ChallanPaymentController extends Controller
                 ]);
             }
              // FeeChallan status change
-            FeeChallan::where('id', $request->fee_challan_id)->update([
-                'status' => 'review'
-            ]);
+            $challan->update(['status' => 'review']);
 
             return back()->with('success', 'Voucher uploaded successfully');
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
         } catch (\Exception $e) {
             \Log::error('Challan upload error: ' . $e->getMessage());
-            return back()->with('error', 'Something went wrong: ' . $e->getMessage());
+            return back()->with('error', 'The payment proof could not be uploaded. Please try again.');
         }
     }
     

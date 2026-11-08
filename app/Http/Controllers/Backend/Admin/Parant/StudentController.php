@@ -133,7 +133,9 @@ class StudentController extends Controller
     public function viewStudent(int $id): View
     {
         $pageTitle = 'View Student';
-        $student = Student::with(['parent','guardian','sibling','academicSession','sessionItem'])->findOrFail($id);
+        $student = Student::with(['parent','guardian','sibling','academicSession','sessionItem'])
+            ->where('parent_id', auth()->guard('parents')->id())
+            ->findOrFail($id);
         $voucher = null;
         if ($student->academic_session_id && $student->session_item_id) {
             $voucher = Voucher::with('items')
