@@ -418,7 +418,7 @@ class OneLinkTest extends TestCase
         $c = $this->makeChallan();
         $this->pay($c->fresh()->challan_no, 25000)->assertJson(['response_code' => '00']);
 
-        $controller = app(\App\Http\Controllers\Backend\Admin\ChallanController::class);
+        $controller = app(\App\Http\Controllers\Admin\ChallanController::class);
         $controller->pendingChallan($c->id);
         $controller->destroyChallan($c->id);
 
