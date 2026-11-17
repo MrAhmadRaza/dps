@@ -23,7 +23,7 @@ return [
     'map_query'  => 'Dunyapur Public School, Dunyapur',
 
     'principal'  => [
-        'name'  => 'Mr. Muhammad Amjad',
+        'name'  => 'Ch. Muhammad Amjad',
         'title' => 'Principal, Dunyapur Public School',
     ],
 
