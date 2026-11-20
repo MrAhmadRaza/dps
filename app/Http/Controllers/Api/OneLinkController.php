@@ -72,7 +72,7 @@ class OneLinkController extends Controller
                 'institute_name'        => $this->bills->instituteName(),
                 'one_link_channel'      => (int) $request->input('channel'),
                 'consumer_detail'       => $this->bills->consumerDetail($challan),
-                'bill_status'           => $paid ? 'P' : 'U',
+                'bill_status'           => $paid ? 'Paid' : 'Unpaid',
                 'due_date'              => $this->bills->dueDate($challan),
                 'amount_within_dueDate' => OneLinkAmount::format($amounts['within']),
                 'amount_after_dueDate'  => OneLinkAmount::format($amounts['after']),
