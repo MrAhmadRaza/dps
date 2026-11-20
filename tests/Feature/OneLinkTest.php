@@ -49,6 +49,30 @@ class OneLinkTest extends TestCase
         parent::tearDown();
     }
 
+    /**
+     * Inquiry reply for a bill that is not to be processed: all parameters present, details null.
+     */
+    private function nullInquiry(string $code, string $description): array
+    {
+        return [
+            'response_code' => $code,
+            'response_description' => $description,
+            'institute_code' => null,
+            'institute_name' => null,
+            'one_link_channel' => null,
+            'consumer_detail' => null,
+            'bill_status' => null,
+            'due_date' => null,
+            'amount_within_dueDate' => null,
+            'amount_after_dueDate' => null,
+            'amount_receivable' => null,
+            'late_fee' => null,
+            'billing_month' => null,
+            'date_paid' => null,
+            'tran_auth_Id' => null,
+        ];
+    }
+
     private function makeChallan(array $overrides = [], string $gender = 'Male'): FeeChallan
     {
         $parent = Parant::create([
@@ -106,7 +130,7 @@ class OneLinkTest extends TestCase
         $c = $this->makeChallan();
         $this->withHeaders(['Authorization' => 'Bearer wrong'])
             ->postJson('/api/onelink/inquiry', ['consumer_number' => $c->fresh()->challan_no, 'bank_mnemonic' => 'BOP', 'channel' => 1])
-            ->assertOk()->assertExactJson(['response_code' => '04', 'response_description' => 'Invalid credentials']);
+            ->assertOk()->assertExactJson($this->nullInquiry('04', 'Invalid credentials'));
     }
 
     public function test_rejects_ip_not_whitelisted(): void
@@ -145,7 +169,8 @@ class OneLinkTest extends TestCase
         config(['onelink.rate_limit' => 1]);
         $c = $this->makeChallan();
         $this->inquiry($c->fresh()->challan_no)->assertOk()->assertJson(['response_code' => '00']);
-        $this->inquiry($c->fresh()->challan_no)->assertOk()->assertJson(['response_code' => '08']);
+        $this->inquiry($c->fresh()->challan_no)->assertOk()
+            ->assertExactJson($this->nullInquiry('08', 'Too many requests, please retry shortly'));
     }
 
     public function test_unknown_endpoint_and_wrong_method_return_http_200(): void
@@ -180,6 +205,7 @@ class OneLinkTest extends TestCase
                 'amount_receivable' => 25000,
                 'late_fee' => 500,
                 'billing_month' => '202601',
+                'date_paid' => '',
                 'tran_auth_Id' => '',
             ]);
 
@@ -236,7 +262,7 @@ class OneLinkTest extends TestCase
 
     public function test_inquiry_unknown_consumer(): void
     {
-        $this->inquiry('99999999')->assertExactJson(['response_code' => '01', 'response_description' => 'Voucher is invalid']);
+        $this->inquiry('99999999')->assertExactJson($this->nullInquiry('01', 'Voucher is invalid'));
     }
 
     public function test_inquiry_zero_amount_is_invalid_voucher(): void
@@ -249,7 +275,7 @@ class OneLinkTest extends TestCase
     {
         $this->withHeaders(['Authorization' => 'Bearer ' . self::TOKEN])
             ->postJson('/api/onelink/inquiry', ['bank_mnemonic' => 'BOP'])
-            ->assertJson(['response_code' => '07', 'response_description' => 'Invalid request: consumer_number, channel']);
+            ->assertExactJson($this->nullInquiry('07', 'Invalid request: consumer_number, channel'));
     }
 
     public function test_inquiry_finds_old_short_challan_numbers_even_zero_padded(): void
@@ -262,7 +288,7 @@ class OneLinkTest extends TestCase
     public function test_expired_challan(): void
     {
         $c = $this->makeChallan(['status' => FeeChallan::STATUS_EXPIRED]);
-        $this->inquiry($c->fresh()->challan_no)->assertExactJson(['response_code' => '03', 'response_description' => 'Voucher expired']);
+        $this->inquiry($c->fresh()->challan_no)->assertExactJson($this->nullInquiry('03', 'Voucher expired'));
         $this->pay($c->fresh()->challan_no, 25000)->assertJson(['response_code' => '03']);
         $this->assertSame('expired', $c->fresh()->status);
         $this->assertSame(0, ChallanPayment::count());

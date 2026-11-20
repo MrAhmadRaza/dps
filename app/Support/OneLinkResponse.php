@@ -14,6 +14,11 @@ use Throwable;
  * Every response (success or failure) is HTTP 200 with:
  *   response_code        - one of the codes below
  *   response_description - a user-friendly message
+ *
+ * Bill inquiry replies always carry the full INQUIRY_FIELDS set, in the same order (BOP ITD
+ * requirement). When the bill is not to be processed (already paid, not found, expired,
+ * invalid request, auth failure...) every field except response_code / response_description
+ * is null.
  */
 class OneLinkResponse
 {
@@ -39,12 +44,56 @@ class OneLinkResponse
         self::PROCESSING_FAILURE  => 'Processing failure, please try again',
     ];
 
+    /**
+     * Fixed parameter set of every bill inquiry response, in order.
+     */
+    public const INQUIRY_FIELDS = [
+        'response_code',
+        'response_description',
+        'institute_code',
+        'institute_name',
+        'one_link_channel',
+        'consumer_detail',
+        'bill_status',
+        'due_date',
+        'amount_within_dueDate',
+        'amount_after_dueDate',
+        'amount_receivable',
+        'late_fee',
+        'billing_month',
+        'date_paid',
+        'tran_auth_Id',
+    ];
+
     public static function error(string $code, ?string $description = null): array
     {
         return [
             'response_code'        => $code,
             'response_description' => $description ?? self::DESCRIPTIONS[$code] ?? '',
         ];
+    }
+
+    /**
+     * Give an inquiry body the fixed INQUIRY_FIELDS shape. Only a successful (00) inquiry
+     * keeps its details; for any other code all detail fields are null.
+     */
+    public static function inquiryBody(array $body): array
+    {
+        $code   = $body['response_code'] ?? self::PROCESSING_FAILURE;
+        $shaped = array_fill_keys(self::INQUIRY_FIELDS, null);
+
+        $shaped['response_code']        = $code;
+        $shaped['response_description'] = $body['response_description'] ?? self::DESCRIPTIONS[$code] ?? '';
+
+        if ($code === self::SUCCESS) {
+            foreach (self::INQUIRY_FIELDS as $field) {
+                if (array_key_exists($field, $body)) {
+                    $shaped[$field] = $body[$field];
+                }
+            }
+        }
+
+        return $shaped;
     }
 
     public static function typeFor(Request $request): string
@@ -71,6 +120,11 @@ class OneLinkResponse
      */
     public static function send(Request $request, string $type, array $body, ?int $challanId = null): JsonResponse
     {
+        // inquiry, rejected_inquiry, error_inquiry
+        if (str_ends_with($type, 'inquiry')) {
+            $body = self::inquiryBody($body);
+        }
+
         try {
             OneLinkLog::create([
                 'type'            => $type,

@@ -52,22 +52,26 @@ class OneLinkController extends Controller
                 return R::send($request, 'inquiry', R::error(R::VOUCHER_INVALID));
             }
 
+            // Negative cases: response_code + description only; OneLinkResponse::send()
+            // pads every other inquiry parameter with null.
+            if ($this->bills->isPaid($challan)) {
+                return R::send($request, 'inquiry', R::error(R::ALREADY_PAID), $challan->id);
+            }
+
             if ($this->bills->isExpired($challan)) {
                 return R::send($request, 'inquiry', R::error(R::VOUCHER_EXPIRED), $challan->id);
             }
 
-            $challan->load(['student.parent', 'payment']);
+            $challan->load(['student.parent']);
             $amounts = $this->bills->amountsFor($challan);
 
             if ($amounts['within'] <= 0) {
                 return R::send($request, 'inquiry', R::error(R::VOUCHER_INVALID, 'Voucher has no payable amount'), $challan->id);
             }
 
-            $paid = $this->bills->isPaid($challan);
-
             $body = [
-                'response_code'         => $paid ? R::ALREADY_PAID : R::SUCCESS,
-                'response_description'  => $paid ? R::DESCRIPTIONS[R::ALREADY_PAID] : 'Voucher is valid',
+                'response_code'         => R::SUCCESS,
+                'response_description'  => 'Voucher is valid',
                 'institute_code'        => (string) config('onelink.institute_code'),
                 'institute_name'        => $this->bills->instituteName(),
                 'one_link_channel'      => (int) $request->input('channel'),
@@ -79,17 +83,9 @@ class OneLinkController extends Controller
                 'amount_receivable'     => OneLinkAmount::format($amounts['receivable']),
                 'late_fee'              => OneLinkAmount::format($amounts['late_fee']),
                 'billing_month'         => $this->bills->billingMonth($challan),
+                'date_paid'             => '',
                 'tran_auth_Id'          => '',
             ];
-
-            if ($paid) {
-                $payment = $challan->payment;
-                if ($payment?->amount !== null) {
-                    $body['amount_receivable'] = OneLinkAmount::format((float) $payment->amount);
-                }
-                $body['tran_auth_Id'] = (string) ($payment?->tran_auth_id ?? '');
-                $body['date_paid']    = $payment?->paid_date ? Carbon::parse($payment->paid_date)->format('Ymd') : '';
-            }
 
             return R::send($request, 'inquiry', $body, $challan->id);
         } catch (\Throwable $e) {
